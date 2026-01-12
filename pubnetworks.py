@@ -710,19 +710,6 @@ def velliet_venot(path, allowed_elements, metadata="N"):
 
 
 def agundez(path, allowed_elements, metadata="N"):
-    """
-    Master function for the Agúndez chemical network.
-
-    Parameters
-    ----------
-    path : str
-        Path to Input_Agundez2025.dat
-    allowed_elements : list
-        Elements to keep, e.g. ['H','He','O']
-    metadata : str
-        'Y' to include metadata, 'N' otherwise
-    """
-
     print("FILTERING AGUNDEZ CHEMICAL NETWORK....")
 
     allowed_upper = {el.upper() for el in allowed_elements}
@@ -730,12 +717,7 @@ def agundez(path, allowed_elements, metadata="N"):
     # -------------------------------------------------
     # Helpers
     # -------------------------------------------------
-
     def parse_formula(formula):
-        """
-        Parse a reduced chemical formula into elements.
-        Example: C2H5O -> {'C':2,'H':5,'O':1}
-        """
         tokens = re.findall(r'([A-Z][a-z]?)(\d*)', formula)
         comp = Counter()
         for el, n in tokens:
@@ -743,58 +725,34 @@ def agundez(path, allowed_elements, metadata="N"):
         return comp
 
     def reduced_formula(species):
-        """
-        Reduce a species ONLY for elemental checking.
-        Nothing here is written to output.
-        """
-
         s = species.strip()
-
-        # Always allowed helpers
         if s.upper() == "M":
             return None
-
-        # Remove excited state after underscore (O_1D, CH2_1, etc)
-        s = s.split("_")[0]
-
-        # Remove any stray non-chemical symbols
+        s = s.split("_")[0]  # excited states
         s = re.sub(r'[^A-Za-z0-9]', '', s)
-
         return s.strip()
 
     def species_allowed(species):
         reduced = reduced_formula(species)
-
-        # M or helpers
         if reduced is None or not reduced:
             return True
-
         atoms = parse_formula(reduced)
         return set(atoms.keys()).issubset(allowed_upper)
 
     def extract_species(line):
-        """
-        Extract species from an Agúndez reaction line.
-        Reactions use '=' as separator.
-        """
         if "=" not in line:
             return []
-
-        # Only reaction part, ignore kinetics/comments
         reaction_part = line.split(":", 1)[0]
-
         try:
             lhs, rhs = reaction_part.split("=", 1)
         except ValueError:
             return []
-
         parts = lhs.split("+") + rhs.split("+")
         return [p.strip() for p in parts if p.strip()]
 
     # -------------------------------------------------
     # Output setup
     # -------------------------------------------------
-
     tag = "_".join(sorted(allowed_upper))
     out_file = os.path.join(
         os.path.dirname(path),
@@ -802,63 +760,84 @@ def agundez(path, allowed_elements, metadata="N"):
     )
 
     kept = []
+    discard_kept = []
 
     # -------------------------------------------------
-    # Metadata control
+    # State flags
     # -------------------------------------------------
-
     in_metadata = True
+    in_bimolecular_block = False
     discard_block = False
 
     # -------------------------------------------------
-    # Read file
+    # Main loop
     # -------------------------------------------------
-
     with open(path, "r") as f:
         for line in f:
             raw = line.rstrip("\n")
 
-            # Start of discarded reactions section (must be kept)
-            if raw.startswith("! Reactions discarded because they involve species not included"):
-                discard_block = True
+            # ----- Block markers -----
+            if raw.startswith("! Bimolecular reactions"):
+                in_metadata = False
+                in_bimolecular_block = True
                 if metadata.upper() == "Y":
                     kept.append(raw)
                 continue
 
-            # References block starts → metadata resumes
+            if raw.startswith("! Reactions discarded because they involve species not included"):
+                in_bimolecular_block = False
+                discard_block = True
+                discard_kept = []
+                if metadata.upper() == "Y":
+                    kept.append(raw)
+                continue
+
             if raw.startswith("! # References"):
                 in_metadata = True
+                discard_block = False
                 if metadata.upper() == "Y":
                     kept.append(raw)
                 continue
 
-            # Inside discarded reactions block → filter normally
+            # ----- Inside BIMOL block -----
+            if in_bimolecular_block and raw.startswith("!"):
+                # "!<space>" → metadata
+                if re.match(r'!\s', raw):
+                    if metadata.upper() == "Y":
+                        kept.append(raw)
+                    continue
+
+                # "!<no space>" → reaction
+                if re.match(r'!\S', raw):
+                    reaction_line = raw[1:].lstrip()
+                    species = extract_species(reaction_line)
+                    if species and all(species_allowed(s) for s in species):
+                        kept.append(raw)
+                    continue
+
+            # ----- Discarded reactions block -----
             if discard_block and "=" in raw:
                 species = extract_species(raw)
                 if species and all(species_allowed(s) for s in species):
-                    kept.append(raw)
+                    discard_kept.append(raw)
                 continue
 
-            # Metadata lines
+            # ----- Normal metadata -----
             if raw.startswith("!") and in_metadata:
                 if metadata.upper() == "Y":
                     kept.append(raw)
                 continue
 
-            # Empty lines
-            if not raw.strip():
-                continue
-
-            # Reaction filtering
+            # ----- Normal reactions -----
             if "=" in raw:
                 species = extract_species(raw)
                 if species and all(species_allowed(s) for s in species):
                     kept.append(raw)
 
-    # -------------------------------------------------
-    # Write output
-    # -------------------------------------------------
-
+    if discard_kept:
+        kept.append("\n!Reactions discarded because they involve species not included\n")
+        kept.extend(discard_kept)
+    
     if not kept:
         print("No reactions matched the allowed elements.")
         return
