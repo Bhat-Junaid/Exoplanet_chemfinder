@@ -84,3 +84,7 @@ pb.velliet_venot(
     path="/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/VELLIET_VENOT_2025",
     allowed_elements=elements, metadata = 'Y'
 )
+
+pb.agundez(
+    path = "/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/Input_Agundez2025.dat",
+    allowed_elements = elements, metadata = 'N')

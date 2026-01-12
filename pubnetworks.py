@@ -66,6 +66,8 @@ def vulcan(path, allowed_elements, metadata="N"):
     print(f"Filtered reactions written to {filename}\n")
 
 
+
+
 # ============================ HU.  NETWORK ================================================
 
 def hu(path, allowed_elements, metadata="N"):
@@ -227,6 +229,8 @@ def hu(path, allowed_elements, metadata="N"):
     print(f"Filtered reactions written to {outfile}\n")
 
 
+
+
 #=================================== MOSES NETWORK ==========================================
 
 def moses(path, allowed_elements, metadata="N"):
@@ -374,6 +378,8 @@ def moses(path, allowed_elements, metadata="N"):
             out.write(block + "\n")
 
     print(f"Filtered reactions written to {output_file}\n")
+
+
 
 
 #=================================== STAND NETWORK ==========================================
@@ -542,6 +548,8 @@ def stand(path, allowed_elements, metadata="N"):
     print(f"Filtered reactions written to {out_file}\n")
 
 
+
+
 #=================================== VELLIET_VENOT NETWORK ==========================================
 
 def velliet_venot(path, allowed_elements, metadata="N"):
@@ -696,3 +704,167 @@ def velliet_venot(path, allowed_elements, metadata="N"):
 
     print(f"Filtered reactions written to {out_file}\n")
 
+
+
+#=================================== AGUNDEZ NETWORK ==========================================
+
+
+def agundez(path, allowed_elements, metadata="N"):
+    """
+    Master function for the Agúndez chemical network.
+
+    Parameters
+    ----------
+    path : str
+        Path to Input_Agundez2025.dat
+    allowed_elements : list
+        Elements to keep, e.g. ['H','He','O']
+    metadata : str
+        'Y' to include metadata, 'N' otherwise
+    """
+
+    print("FILTERING AGUNDEZ CHEMICAL NETWORK....")
+
+    allowed_upper = {el.upper() for el in allowed_elements}
+
+    # -------------------------------------------------
+    # Helpers
+    # -------------------------------------------------
+
+    def parse_formula(formula):
+        """
+        Parse a reduced chemical formula into elements.
+        Example: C2H5O -> {'C':2,'H':5,'O':1}
+        """
+        tokens = re.findall(r'([A-Z][a-z]?)(\d*)', formula)
+        comp = Counter()
+        for el, n in tokens:
+            comp[el.upper()] += int(n) if n else 1
+        return comp
+
+    def reduced_formula(species):
+        """
+        Reduce a species ONLY for elemental checking.
+        Nothing here is written to output.
+        """
+
+        s = species.strip()
+
+        # Always allowed helpers
+        if s.upper() == "M":
+            return None
+
+        # Remove excited state after underscore (O_1D, CH2_1, etc)
+        s = s.split("_")[0]
+
+        # Remove any stray non-chemical symbols
+        s = re.sub(r'[^A-Za-z0-9]', '', s)
+
+        return s.strip()
+
+    def species_allowed(species):
+        reduced = reduced_formula(species)
+
+        # M or helpers
+        if reduced is None or not reduced:
+            return True
+
+        atoms = parse_formula(reduced)
+        return set(atoms.keys()).issubset(allowed_upper)
+
+    def extract_species(line):
+        """
+        Extract species from an Agúndez reaction line.
+        Reactions use '=' as separator.
+        """
+        if "=" not in line:
+            return []
+
+        # Only reaction part, ignore kinetics/comments
+        reaction_part = line.split(":", 1)[0]
+
+        try:
+            lhs, rhs = reaction_part.split("=", 1)
+        except ValueError:
+            return []
+
+        parts = lhs.split("+") + rhs.split("+")
+        return [p.strip() for p in parts if p.strip()]
+
+    # -------------------------------------------------
+    # Output setup
+    # -------------------------------------------------
+
+    tag = "_".join(sorted(allowed_upper))
+    out_file = os.path.join(
+        os.path.dirname(path),
+        f"Agundez_output_{tag}.dat"
+    )
+
+    kept = []
+
+    # -------------------------------------------------
+    # Metadata control
+    # -------------------------------------------------
+
+    in_metadata = True
+    discard_block = False
+
+    # -------------------------------------------------
+    # Read file
+    # -------------------------------------------------
+
+    with open(path, "r") as f:
+        for line in f:
+            raw = line.rstrip("\n")
+
+            # Start of discarded reactions section (must be kept)
+            if raw.startswith("! Reactions discarded because they"):
+                discard_block = True
+                if metadata.upper() == "Y":
+                    kept.append(raw)
+                continue
+
+            # References block starts → metadata resumes
+            if raw.startswith("! # References"):
+                in_metadata = True
+                if metadata.upper() == "Y":
+                    kept.append(raw)
+                continue
+
+            # Inside discarded reactions block → filter normally
+            if discard_block and "=" in raw:
+                species = extract_species(raw)
+                if species and all(species_allowed(s) for s in species):
+                    kept.append(raw)
+                continue
+
+            # Metadata lines
+            if raw.startswith("!") and in_metadata:
+                if metadata.upper() == "Y":
+                    kept.append(raw)
+                continue
+
+            # Empty lines
+            if not raw.strip():
+                continue
+
+            # Reaction filtering
+            if "=" in raw:
+                species = extract_species(raw)
+                if species and all(species_allowed(s) for s in species):
+                    kept.append(raw)
+
+    # -------------------------------------------------
+    # Write output
+    # -------------------------------------------------
+
+    if not kept:
+        print("No reactions matched the allowed elements.")
+        return
+
+    with open(out_file, "w") as out:
+        for line in kept:
+            out.write(line + "\n")
+
+    print(f"Filtered reactions written to {out_file}")
