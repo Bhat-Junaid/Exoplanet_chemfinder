@@ -819,7 +819,7 @@ def agundez(path, allowed_elements, metadata="N"):
             raw = line.rstrip("\n")
 
             # Start of discarded reactions section (must be kept)
-            if raw.startswith("! Reactions discarded because they"):
+            if raw.startswith("! Reactions discarded because they involve species not included"):
                 discard_block = True
                 if metadata.upper() == "Y":
                     kept.append(raw)
