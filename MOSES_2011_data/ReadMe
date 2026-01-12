@@ -1,0 +1,39 @@
+================================================================================
+Title: Disequilibrium Carbon, Oxygen, and Nitrogen Chemistry in the 
+       Atmospheres of HD 189733b and HD 209458b  
+Authors: Moses J.I., Visscher C., Fortney J.J., Showman A.P., Lewis N.K., 
+         Griffith C.A., Klippenstein S.J., Shabram M., Friedson A.J., 
+         Marley M.S., Freedman R.S. 
+================================================================================
+Description of contents: The tar package contains five ascii output files 
+ from model runs described in the paper.  Each file contains a list of species 
+ in the model; a list of reactions (without rate coefficients -- those are 
+ found later in the file for reaction numbers provided in this list); the 
+ background atmospheric temperature, pressure, density, and eddy diffusion 
+ coefficients at the grid points; assumed kinetic rate coefficients at 
+ those grid points (see also the Supplementary Table S1); and model results 
+ for species concentrations, volume mixing ratios (mole fractions), production 
+ and loss rates; photolysis rates (s^-1); reaction rates for all reactions 
+ in the model (e.g., the reaction rate for reaction number x, described by 
+ A + B = C + D, is the rate coefficient k_x times the concentration of species 
+ A times the concentration of species B); and chemical loss time scales for 
+ the species.  Units are cgs unless otherwise indicated.  The ascii files are 
+ fully viewable and searchable with any text editor; headings for the different 
+ categories of output typically end with a colon to aid the searches.  The file 
+ names contain the name of the planet (hd189 = HD 189733b; hd209 = HD 209458b), 
+ a shorthand for the thermal structure ("termave" is terminator average, "wtday"
+ and "dayave" are dayside averages, and "1d2pi" is the 1-D thermal structure 
+ for the assumption that the incident stellar energy is redistributed over the 
+ dayside hemisphere only), and a description of the K_zz profile for the model.  
+ All models provide in the tar file have the "nominal" K_zz profile estimated 
+ for the particular temperature profile, as described in the text.  
+
+System requirements: Files can be read with any text editor on any operating 
+ system. 
+
+Additional comments: Additional model output or model information available 
+ upon request from the first author. 
+
+================================================================================
+
+

@@ -1,0 +1,1033 @@
+#Title: Photochemistry in Terrestrial Exoplanet Atmospheres I: 
+#       Photochemistry Model and Benchmark Cases 
+#Authors: Hu R., Seager S., Bains W. 
+#Table: Reaction rates of bi-molecular reactions, ter-molecular reactions and 
+#       thermo-dissociation reactions in the photochemistry model
+#================================================================================
+#Byte-by-byte Description of file: apj450768t1_mrt.txt
+#--------------------------------------------------------------------------------
+#   Bytes Format Units Label     Explanations
+#--------------------------------------------------------------------------------
+#   1-  4 A4     ---   Number    Model number (1)
+#   6- 19 A14    ---   Reactant  Reactants
+#  21- 36 A16    ---   Product   Products
+#  38- 89 A52    ---   RRate     Reaction rate (2)
+#  91-112 A22    ---   Ref       Reference
+# 114-122 A9     K     Temp      Temperature range reaction rate is valid
+# 124-140 A17    ---   Note      Additional note (3)
+#--------------------------------------------------------------------------------
+#Note (1): 
+#    R = bi-molecular reaction;
+#    M = ter-molecular reaction;
+#    T = thermo-dissociation reaction.
+#Note (2): The unit of the reaction rate is cm^3 s^-1 for bi-molecular reactions, 
+#					cm^6 s^-1 for ter-molecular reactions, and s^-1 for thermo-dissociation 
+#					reactions. The unit of the temperature T is K and the unit of the total 
+#					number density N is cm^-3.
+#Note (3): We annotate "Low Temperature" and "High Temperature" to the reaction 
+#          rates only valid at temperatures lower than 300 K and higher than 
+#          1000 K, respectively. For low-temperature applications, including 
+#          explorations of Solar-System terrestrial planets and habitable 
+#          exoplanets, we exclude those reactions marked as ``High Temperature".
+#--------------------------------------------------------------------------------
+#
+R1   C + CH2        CH + CH          2.69e-12 exp(-23573.0/T)                             NIST                   1000-4000                   
+R2   C + CN         C2 + N           4.98e-10 exp(-18041.0/T)                             NIST                   5000-8000                   
+R3   C + H2         CH + H           6.64e-10 exp(-11700.0/T)                             NIST                   1520-2540                   
+R4   C + H2S        CH + HS          2.1e-10                                              NIST                   298                         
+R5   C + N2         CN + N           8.7e-11 exp(-22611.0/T)                              NIST                   2000-5000                   
+R6   C + O2         CO + O           5.1e-11(T/298.0)^-0.3^                               NIST                   15-295    Low Temperature   
+R7   C + OCS        CO + CS          1.01e-10                                             NIST                   298                         
+R8   C + SO2        CO + SO          6.91e-11                                             NIST                   298                         
+R9   C2H + C2H3     C2H2 + C2H2      1.6e-12                                              NIST                   300-2500                    
+R10  H2 + C2H4      C2H5 + H         1.69e-11 exp(-34277.6/T)                             NIST                   300-2500                    
+R11  C2H + C2H5     C2H4 + C2H2      3.0e-12                                              NIST                   300-2500                    
+R12  C2H + C2H6     C2H2 + C2H5      6.0e-12                                              NIST                   300-2500                    
+R13  C2H + CH3O2    CH3O + C2HO      4.0e-11                                              NIST                   300-2500                    
+R14  C2H + CH4O     C2H2 + CH3O      2.0e-12                                              NIST                   300-2500                    
+R15  C2H2 + C2H5    C2H6 + C2H       4.5e-13 exp(-11800.0/T)                              NIST                   300-2500                    
+R16  C2H2 + C2H6    C2H5 + C2H3      1.6e-12 exp(-2300.0/T)                               NIST                   290-310   Low Temperature   
+R17  C2H2 + CN      HCN + C2H        2.2e-10                                              NIST                   294                         
+R18  C2H3 + C2H4O   C2H4 + C2H3O     1.35e-13 exp(-1850.0/T)                              NIST                   480-520   Low Temperature   
+R19  C2H4 + C2H5    C2H3 + C2H6      5.83e-14(T/298.0)^3.13^ exp(-9060.0/T)               NIST                   300-2500                    
+R20  C2H4 + CN      HCN + C2H3       2.1e-10                                              NIST                   294                         
+R21  C2H5 + C2H3    C2H4 + C2H4      4.4e-11                                              NIST                   298                         
+R22  C2H5 + C2H3    C2H6 + C2H2      2.4e-11                                              NIST                   298                         
+R23  C2H5 + C2H4O   C2H6 + C2H3O     2.1e-12 exp(-4280.0/T)                               NIST                   357-676   Low Temperature   
+R24  C2H5 + CNO     HCN + C2H4O      8.7e-13                                              NIST                   293                         
+R25  C2H5 + CNO     HCNO + C2H4      1.1e-10                                              NIST                   293                         
+R26  C2H5O + O2     C2H4O + HO2      6.3e-14 exp(-550.0/T)                                JPL                    200-300   Low Temperature   
+R27  C2H6 + C2H3    C2H5 + C2H4      1.46e-13(T/298.0)^3.3^ exp(-5280.0/T)                NIST                   300-2500                    
+R28  C2H6 + C2H3O   C2H4O + C2H5     1.91e-13(T/298.0)^2.75^ exp(-8820.0/T)               NIST                   300-2500                    
+R29  C2H6 + CN      HCN + C2H5       1.36e-11(T/298.0)^1.26^ exp(208.0/T)                 NIST                   300-2500                    
+R30  CH + C2H6      C2H4 + CH3       1.3e-10                                              NIST                   298                         
+R31  CH + CH        C2H2             2.0e-10                                              NIST                   298                         
+R32  CH + CH2O      C2H3O            1.57e-10 exp(260.0/T)                                NIST                   297-670   Low Temperature   
+R33  CH + CH4       C2H4 + H         1.7e-11                                              NIST                   298                         
+R34  CH2 + C2H      C2H2 + CH        3.0e-11                                              NIST                   300-2500                    
+R35  CH2 + C2H2O    C2H4 + CO        2.1e-10                                              NIST                   298                         
+R36  CH2 + C2H3     C2H2 + CH3       3.0e-11                                              NIST                   300-2500                    
+R37  CH2 + C2H3O    C2H2O + CH3      3.0e-11                                              NIST                   300-2500                    
+R38  CH2 + C2H5     C2H4 + CH3       3.0e-11                                              NIST                   300-2500                    
+R39  CH2 + C2H6     C2H5 + CH3       1.07e-11 exp(-3980.0/T)                              NIST                   296-707   Low Temperature   
+R40  NH + OH        NH2 + O          2.94e-12(T/298.0)^0.1^ exp(5800.0/T)                 NIST                   298-3000                    
+R41  H2 + C2H2      C2H3 + H         4.0e-12 exp(-32714.0/T)                              NIST                   300-2500                    
+R42  CH2 + CH2      C2H2 + H2        2.62e-9 exp(-6010.0/T)                               NIST                   1100-2700 High Temperature  
+R43  CH2 + CH2      C2H2 + H + H     3.32e-10 exp(-5530.0/T)                              NIST                   1100-2700 High Temperature  
+R44  CH2 + CH3      C2H4 + H         7.0e-11                                              NIST                   300-2500                    
+R45  CH2 + CH3O     C2H4 + OH        4.0e-11                                              NIST                   300-2500                    
+R46  CH2 + CH3O     CH2O + CH3       2.0e-12                                              NIST                   300-2500                    
+R47  CH2 + CH3O2    CH2O + CH3O      3.0e-11                                              NIST                   300-2500                    
+R48  CH2 + CH4      CH3 + CH3        7.12e-12 exp(-5050.0/T)                              NIST                   296-707   Low Temperature   
+R49  CH2 + CH4O     CH3 + CH3O       1.12e-15(T/298.0)^3.1^ exp(-3490.0/T)                NIST                   300-2500                    
+R50  CH2 + CHO      CO + CH3         3.0e-11                                              NIST                   300-2500                    
+R51  CH2O + C2H3    C2H4 + CHO       8.07e-14(T/298.0)^2.81^ exp(-2950.0/T)               NIST                   300-2500                    
+R52  CH2O + C2H3O   C2H4O + CHO      3.0e-13 exp(-6500.0/T)                               NIST                   300-2500                    
+R53  CH2O + C2H5    C2H6 + CHO       8.19e-14(T/298.0)^2.81^ exp(-2950.0/T)               NIST                   300-2500                    
+R54  CH2O + CH3O2   CHO + CH4O2      3.3e-12 exp(-5870.0/T)                               NIST                   300-2500                    
+R55  CH2O + CN      HCN + CHO        7.0e-11                                              NIST                   500-2500                    
+R56  CH2O + CNO     HCNO + CHO       1.0e-11                                              NIST                   500-2500                    
+R57  CH3 + C2H2     CH4 + C2H        3.0e-13 exp(-8700.0/T)                               NIST                   300-2500                    
+R58  CH3 + C2H2O    CO + C2H5        8.3e-12                                              NIST                   1640-1950 High Temperature  
+R59  CH3 + C2H3     CH4 + C2H2       1.5e-11 exp(385.0/T)                                 NIST                   300-900                     
+R60  CH3 + C2H3O    C2H6 + CO        5.4e-11                                              NIST                   298                         
+R61  CH3 + C2H3O    CH4 + C2H2O      3.52e-12(T/298.0)^-0.8^                              NIST                   300-2500                    
+R62  CH3 + C2H4     CH4 + C2H3       1.57e-14(T/298.0)^3.7^ exp(-4780.0/T)                NIST                   300-2500                    
+R63  CH3 + C2H4O    CH4 + C2H3O      2.97e-16(T/298.0)^5.64^ exp(-1240.0/T)               NIST                   300-1250                    
+R64  CH3 + C2H5     CH4 + C2H4       1.88e-12(T/298.0)^-0.5^                              NIST                   300-2500                    
+R65  CH3 + C2H6     CH4 + C2H5       1.74e-16(T/298.0)^6^ exp(-3040.0/T)                  NIST                   300-1500                    
+R66  CH3 + CH2O     CH4 + CHO        1.6e-16(T/298.0)^6.1^ exp(-990.0/T)                  NIST                   300-2000                    
+R67  CH3 + CH3O     CH2O + CH4       4.0e-11                                              NIST                   300-2500                    
+R68  CH3 + CH3O2    CH3O + CH3O      4.0e-11                                              NIST                   300-2500                    
+R69  CH3 + CH4O     CH4 + CH3O       1.12e-15(T/298.0)^3.1^ exp(-3490.0/T)                NIST                   300-2500                    
+R70  CH3 + CHO      C2H4O            3.0e-11                                              NIST                   300-2500                    
+R71  CH3 + CHO      CH4 + CO         2.0e-10                                              NIST                   300-2500                    
+R72  CH3 + CNO      CH2O + HCN       4.2e-13                                              NIST                   293                         
+R73  CH3O + C2H     CH2O + C2H2      6.0e-11                                              NIST                   300-2500                    
+R74  CH3O + C2H2    C2H3 + CH2O      1.2e-12 exp(-4529.0/T)                               NIST                   300-2500                    
+R75  CH3O + C2H3    C2H4 + CH2O      4.0e-11                                              NIST                   300-2500                    
+R76  CH3O + C2H5    C2H4 + CH4O      4.0e-12                                              NIST                   300-2500                    
+R77  CH3O + C2H5    C2H6 + CH2O      4.0e-11                                              NIST                   300-2500                    
+R78  CH3O + C2H6    C2H5 + CH4O      4.0e-13 exp(-3570.0/T)                               NIST                   300-2500                    
+R79  CH3O + CH2O    CH4O + CHO       1.7e-13 exp(-1500.0/T)                               NIST                   300-2500                    
+R80  CH3O + CH3O2   CH2O + CH4O2     5.0e-13                                              NIST                   300-2500                    
+R81  CH3O + O2      CH2O + HO2       9.1e-12                                              JPL                    200-300   Low Temperature   
+R82  CH3O2 + C2H3   CH3O + C2H3O     4.0e-11                                              NIST                   300-2500                    
+R83  CH3O2 + C2H5   C2H5O + CH3O     4.0e-11                                              NIST                   300-2500                    
+R84  CH3O2 + C2H6   C2H5 + CH4O2     4.9e-13                                              NIST                   300-2500                    
+R85  CH3O2 + CH3O2  CH3O + CH3O + O2 5.9e-14 exp(390.0/T)                                 JPL                    200-300   Low Temperature   
+R86  CH3O2 + CH3O2  CH4O + CH2O + O2 3.6e-14 exp(390.0/T)                                 JPL                    200-300   Low Temperature   
+R87  CH3O2 + CH4O   CH4O2 + CH3O     3.0e-12 exp(-6900.0/T)                               NIST                   300-2500                    
+R88  CH3S + CO      OCS + CH3        8.43e-13(T/298.0)^1.57^ exp(-3359.0/T)               NIST                   200-3000                    
+R89  CH3S + O2      CH3 + SO2        6.23e-8(T/298.0)^-3.8^ exp(-6189.2/T)                NIST                   200-2000                    
+R90  CH3S + O3      CH3O + SO2       1.5e-12 exp(360.0/T)                                 JPL                    200-300   Low Temperature   
+R91  CH4 + C2H      C2H2 + CH3       3.0e-12 exp(-250.0/T)                                NIST                   300-2500                    
+R92  CH4 + C2H2     C2H3 + CH3       5.0e-13 exp(-2479.0/T)                               NIST                   290-310   Low Temperature   
+R93  CH4 + C2H3     C2H4 + CH3       2.13e-14(T/298.0)^4.02^ exp(-2479.0/T)               NIST                   300-2500                    
+R94  CH4 + C2H5     C2H6 + CH3       2.51e-15(T/298.0)^4.14^ exp(-6320.0/T)               NIST                   300-2500                    
+R95  CH4 + CH3      H2 + C2H5        1.66e-11 exp(-11600.0/T)                             NIST                   1950-2770                   
+R96  CH4 + CH3O     CH4O + CH3       2.61e-13 exp(-4450.0/T)                              NIST                   300-2500                    
+R97  CH4 + CH3O2    CH3 + CH4O2      3.0e-13 exp(-9299.5/T)                               NIST                   300-2500                    
+R98  CH4 + CHO      CH2O + CH3       1.36e-13(T/298.0)^2.85^ exp(-11300.0/T)              NIST                   300-2500                    
+R99  CH4 + CN       HCN + CH3        5.11e-13(T/298.0)^2.64^ exp(150.3/T)                 NIST                   290-1500                    
+R100 CH4 + CNO      CH3 + HCNO       1.62e-11 exp(-4090.5/T)                              NIST                   512-1100                    
+R101 CH4O + CN      HCN + CH3O       1.2e-10                                              NIST                   294                         
+R102 CH4S + CN      HCN + CH3S       2.19e-10                                             NIST                   293                         
+R103 CH4S + H       CH3 + H2S        1.15e-11 exp(-840.0/T)                               NIST                   313-454   Low Temperature   
+R104 CH4S + H       H2 + CH3S        4.82e-11 exp(-1309.8/T)                              NIST                   313-454   Low Temperature   
+R105 CH4S + NO3     CH3S + HNO3      4.4e-13 exp(210.0/T)                                 JPL                    200-300   Low Temperature   
+R106 CH4S + O       CH3 + HSO        3.45e-14(T/298.0)^4.7^ exp(1210.0/T)                 NIST                   254-495   Low Temperature   
+R107 CH4S + OH      H2O + CH3S       9.9e-12 exp(360.0/T)                                 JPL                    200-300   Low Temperature   
+R108 CHO + C2H      C2H2 + CO        1.0e-10                                              NIST                   300-2500                    
+R109 CHO + C2H3     C2H4 + CO        1.5e-10                                              NIST                   300-2500                    
+R110 CHO + C2H3O    C2H4O + CO       1.5e-11                                              NIST                   300-2500                    
+R111 CHO + C2H4O    CH4 + CO + CHO   1.33e-11 exp(-523.0/T)                               NIST                   415-670   Low Temperature   
+R112 CHO + C2H5     C2H6 + CO        2.0e-10                                              NIST                   300-2500                    
+R113 CHO + CH3O     CH4O + CO        1.5e-10                                              NIST                   300-2500                    
+R114 CHO + CH3O     CH2O + CH2O      3.0e-10                                              NIST                   300-2500                    
+R115 CHO + CH4O     CH2O + CH3O      2.41e-13(T/298.0)^2.9^ exp(-6600.0/T)                NIST                   300-2500                    
+R116 CHO + CN       HCN + CO         1.0e-10                                              NIST                   500-2500                    
+R117 CHO + CNO      HCNO + CO        6.0e-11                                              NIST                   500-2500                    
+R118 CHO + O2       CO + HO2         5.2e-12                                              JPL                    200-400   Low Temperature   
+R119 CN + HCNO      HCN + CNO        1.1e-10                                              NIST                   298                         
+R120 CO + C2H2      C2H + CHO        8.0e-10 exp(-53641.4/T)                              NIST                   300-2500                    
+R121 CO + C2H4      C2H3 + CHO       2.5e-10 exp(-45583.2/T)                              NIST                   300-2500                    
+R122 CO + CH3       C2H2 + OH        6.3e-11 exp(-30428.9/T)                              NIST                   1500-1900                   
+R123 CO2 + CH2      CH2O + CO        3.9e-14                                              NIST                   300-2500                    
+R124 CO2 + CN       CNO + CO         1.35e-12(T/298.0)^2.16^ exp(-13470.5/T)              NIST                   300-3000                    
+R125 CS + O         CO + S           2.7e-10 exp(-760.0/T)                                JPL                    200-300   Low Temperature   
+R126 CS + O3        O2 + OCS         3.0e-16                                              NIST                   298                         
+R127 H + C2H        C2H2             3.0e-10                                              NIST                   300-2500                    
+R128 H + C2H        H2 + C2          6.0e-11 exp(-14192.0/T)                              NIST                   300-2500                    
+R129 H + C2H2       C2H + H2         1.0e-10 exp(-11200.0/T)                              NIST                   300-2500                    
+R130 H + C2H2O      CO + CH3         5.0e-12(T/298.0)^1.45^ exp(-1398.8/T)                NIST                   200-2500                    
+R131 H + C2H3       C2H4             2.02e-10(T/298.0)^0.2^                               NIST                   200-2000                    
+R132 H + C2H3       C2H2 + H2        2.0e-11                                              NIST                   300-2500                    
+R133 H + C2H3O      CHO + CH3        2.2e-11                                              NIST                   298                         
+R134 H + C2H3O      C2H2O + H2       1.2e-11                                              NIST                   298                         
+R135 H + C2H4       C2H3 + H2        4.0e-12(T/298.0)^2.53^ exp(-6160.0/T)                NIST                   300-2500                    
+R136 H + C2H4O      C2H5O            1.33e-11 exp(-3221.0/T)                              NIST                   298-2000                    
+R137 H + C2H4O      C2H3O + H2       6.64e-11 exp(-2120.4/T)                              NIST                   300-2000                    
+R138 H + C2H4O      CH4 + CHO        1.08e-10 exp(-2120.4/T)                              NIST                   300-2000                    
+R139 H + N2O        N2 + OH          1.60e-10 exp(-7600.0/T)                              NIST                   700-2500  High Temperature  
+R140 H + C2H5       CH3 + CH3        6.0e-11                                              NIST                   300-2000                    
+R141 H + C2H5       C2H4 + H2        3.0e-12                                              NIST                   300-2500                    
+R142 H + C2H5O      C2H4O + H2       3.32e-11                                             NIST                   295                         
+R143 H + C2H6       C2H5 + H2        1.23e-11(T/298.0)^1.5^ exp(-3729.6/T)                NIST                   300-2000                    
+R144 H + C2HO       CO + CH2         4.98e-11                                             NIST                   1000-2500 High Temperature  
+R145 H + CH         C + H2           1.31e-10 exp(-85.6/T)                                NIST                   300-2000                    
+R146 H + CH2        CH + H2          1.0e-11 exp(900.0/T)                                 NIST                   300-3000                    
+R147 H + CH2O       CH3O             4.0e-11 exp(-2068.7/T)                               NIST                   290-2000                    
+R148 H + CH2O       H2 + CHO         2.14e-12(T/298.0)^1.62^ exp(-1090.0/T)               NIST                   300-1700                    
+R149 H + CH3        CH2 + H2         1.0e-10 exp(-7600.0/T)                               NIST                   300-2500                    
+R150 H + CH3NO2     CH4O + NO        2.0e-13 exp(-956.2/T)                                NIST                   223-398   Low Temperature   
+R151 H + CH3NO2     CH3 + HNO2       5.28e-9 exp(-7920.0/T)                               NIST                   1000-1100 High Temperature  
+R152 H + CH3O       CH4O             2.89e-10(T/298.0)^0.04^                              NIST                   300-2500                    
+R153 H + CH3O       CH3 + OH         1.6e-10                                              NIST                   300-2500                    
+R154 H + CH3O       CH2O + H2        1.0e-11                                              NIST                   300-2500                    
+R155 H + CH3O2      CH3O + OH        1.6e-10                                              NIST                   300-2500                    
+R156 H + CH3O2      CH4 + O2         1.17e-11(T/298.0)^1.02^ exp(-8352.9/T)               NIST                   273-2000                    
+R157 H + CH4        CH3 + H2         5.83e-13(T/298.0)^3.0^ exp(-4040.0/T)                NIST                   300-2500                    
+R158 H + CH4O       CH3 + H2O        3.32e-10 exp(-2670.0/T)                              NIST                   1370-1840 High Temperature  
+R159 H + CH4O       CH3O + H2        2.42e-12(T/298.0)^2.0^ exp(-2270.0/T)                NIST                   300-2500                    
+R160 H + CH4O2      CH3O + H2O       1.21e-13 exp(-936.0/T)                               NIST                   250-358   Low Temperature   
+R161 H + CH4O2      H2 + CH3O2       1.46e-13 exp(-936.0/T)                               NIST                   250-358   Low Temperature   
+R162 H + CHO        CO + H2          1.50e-10                                             NIST                   300-2500                    
+R163 H + CNO        CO + NH          8.9e-11                                              NIST                   500-2500                    
+R164 H + CNO        HCN + O          1.86e-11(T/298.0)^0.9^ exp(-2920.2/T)                NIST                   500-2500                    
+R165 H + CO2        CO + OH          2.51e-10 exp(-13350.0/T)                             NIST                   300-2500                    
+R166 H + H2O        H2 + OH          6.82e-12(T/298.0)^1.6^ exp(-9720.0/T)                NIST                   300-2500                    
+R167 H + H2O2       OH + H2O         1.69e-11 exp(-1800.0/T)                              NIST                   300-1000                    
+R168 H + H2O2       H2 + HO2         2.81e-12 exp(-1890.0/T)                              NIST                   300-1000                    
+R169 H + HCNO       H2 + CNO         1.91e-12(T/298.0)^1.66^ exp(-7000.0/T)               NIST                   500-2500                    
+R170 H + HCNO       CN + H2O         1.66e-12                                             NIST                   1800-2600 High Temperature  
+R171 H + HCNO       CO + NH2         5.0e-11 exp(-2300.0/T)                               NIST                   500-2500                    
+R172 H + HNO        H2 + NO          3.0e-11 exp(-500.0/T)                                NIST                   298-2000                    
+R173 H + HNO        OH + NH          2.41e-9(T/298.0)^-0.5^ exp(-9010.0/T)                NIST                   350-3000                    
+R174 H + HNO        NH2 + O          1.05e-9(T/298.0)^-0.3^ exp(-14673.2/T)               NIST                   550-3000                    
+R175 H + HNO2       OH + HNO         1.26e-11(T/298.0)^0.86^ exp(-2500.0/T)               NIST                   300-2500                    
+R176 H + HNO2       H2 + NO2         2.0e-11 exp(-3700.0/T)                               NIST                   300-2500                    
+R177 H + HNO2       H2O + NO         6.39e-13(T/298.0)^1.89^ exp(-1940.0/T)               NIST                   300-2500                    
+R178 H + HNO3       H2O + NO2        1.39e-14(T/298.0)^3.29^ exp(-3160.0/T)               NIST                   300-3000                    
+R179 H + HNO3       H2 + NO3         5.65e-12(T/298.0)^1.53^ exp(-8250.0/T)               NIST                   300-3000                    
+R180 H + HO2        OH + OH          7.2e-11                                              JPL                    298                         
+R181 H + HO2        O + H2O          1.6e-12                                              JPL                    298                         
+R182 H + HO2        H2 + O2          6.9e-12                                              JPL                    298                         
+R183 H + N2O        NO + NH          5.03e-7(T/298.0)^-2.16^ exp(-18642.2/T)              NIST                   300-4000                    
+R184 H + NH         H2 + N           1.69e-11                                             NIST                   1500-2500 High Temperature  
+R185 H + NH2        H2 + NH          1.05e-10 exp(-4450.1/T)                              NIST                   1100-1800 High Temperature  
+R186 H + NH3        H2 + NH2         7.80e-13(T/298.0)^2.4^ exp(-4990.1/T)                NIST                   490-1780                    
+R187 H + NO         NH + O           9.3e-10(T/298.0)^-0.1^ exp(-35240.0/T)               NIST                   1300-3000                   
+R188 H + NO         OH + N           3.6e-10 exp(-24896.0/T)                              NIST                   1500-4500                   
+R189 H + NO2        OH + NO          4.0e-10 exp(-340.0/T)                                JPL                    200-300   Low Temperature   
+R190 H + NO3        OH + NO2         9.4e-11                                              NIST                   298                         
+R191 H + O2         O + OH           6.73e-10(T/298.0)^-0.59^ exp(-8152.0/T)              NIST                   800-3500  High Temperature  
+R192 H + O3         OH + O2          1.4e-10 exp(-470.0/T)                                JPL                    200-300   Low Temperature   
+R193 H2 + C         CH + H           6.64e-10 exp(-11700.0/T)                             NIST                   1520-2540                   
+R194 H2 + C2        C2H + H          1.1e-10 exp(-4000.0/T)                               NIST                   2580-4650 High Temperature  
+R195 H2 + C2H       C2H2 + H         8.95e-13(T/298.0)^2.57^ exp(-130.0/T)                NIST                   200-2000                    
+R196 H2 + C2H2      C2H4             5.0e-13 exp(-19604.4/T)                              NIST                   300-2500                    
+R197 H2 + C2H3      C2H4 + H         1.61e-13(T/298.0)^2.63^ exp(-4300.0/T)               NIST                   300-2500                    
+R198 H2 + C2H5      C2H6 + H         4.12e-15(T/298.0)^3.6^ exp(-4250.0/T)                NIST                   300-2500                    
+R199 H2 + C2HO      C2H3O            1.0e-11 exp(-2000.0/T)                               NIST                   438-761                     
+R200 H2 + C2HO      CH3 + CO         1.2e-11 exp(-2000.0/T)                               NIST                   438-761                     
+R201 NH + NO        OH + N2          5.86e-12(T/298.0)^-0.5^ exp(-60.0/T)                 NIST                   300-4000                    
+R202 H2 + CH        CH2 + H          3.75e-10 exp(-1660.0/T)                              NIST                   327-397   Low Temperature   
+R203 H2 + CH3       CH4 + H          6.86e-14(T/298.0)^2.74^ exp(-4740.0/T)               NIST                   300-2500                    
+R204 H2 + CH3O      CH4O + H         9.96e-14(T/298.0)^2^ exp(-6720.0/T)                  NIST                   300-2500                    
+R205 H2 + CH3O2     CH4O2 + H        5.0e-11 exp(-13110.0/T)                              NIST                   300-2500                    
+R206 H2 + CHO       CH2O + H         2.66e-13(T/298.0)^2.0^ exp(-8970.0/T)                NIST                   300-2500                    
+R207 H2 + CN        HCN + H          5.65e-13(T/298.0)^2.45^ exp(-1131.0/T)               NIST                   300-2500                    
+R208 H2 + HNO       NH + H2O         1.66e-10 exp(-8059.4/T)                              NIST                   1300-1900 High Temperature  
+R209 H2 + HO2       H2O2 + H         5.0e-11 exp(-13110.0/T)                              NIST                   300-2500                    
+R210 H2 + N2O       H2O + N2         5.73e-12(T/298.0)^0.5^                               NIST                   1700-3000 High Temperature  
+R211 H2 + NH        NH2 + H          3.5e-11 exp(-7758.0/T)                               NIST                   833-1432  High Temperature  
+R212 H2 + NH2       NH3 + H          6.75e-14(T/298.0)^2.6^ exp(-3006.8/T)                NIST                   400-2200                    
+R213 H2 + NO2       H + HNO2         4.0e-11 exp(-14553.0/T)                              NIST                   760-1000                    
+R214 H2O + C        CH + OH          1.3e-12 exp(-19845.0/T)                              NIST                   1000-4000                   
+R215 H2O + C2H      C2H2 + OH        7.74e-14(T/298.0)^3.05^ exp(-376.0/T)                NIST                   300-2000                    
+R216 HSO + O3       HSO2 + O2        3.0e-14                                              JPL                    298                         
+R217 H2O + C2H5     C2H6 + OH        2.06e-14(T/298.0)^1.44^ exp(-10200.0/T)              NIST                   300-2500                    
+R218 H2O + CH       CH3O             9.48e-12 exp(380.0/T)                                NIST                   298-669   Low Temperature   
+R219 H2O + CN       HCN + OH         1.3e-11 exp(-3760.0/T)                               NIST                   500-2500                    
+R220 H2O + CNO      HCNO + OH        9.13e-14(T/298.0)^2.17^ exp(-3050.0/T)               NIST                   500-2500                    
+R221 H2O2 + C2H3    C2H4 + HO2       2.0e-14 exp(300.0/T)                                 NIST                   300-2500                    
+R222 H2O2 + C2H3O   C2H4O + HO2      3.0e-13 exp(-4140.0/T)                               NIST                   300-2500                    
+R223 H2O2 + C2H5    C2H6 + HO2       1.45e-14 exp(-490.0/T)                               NIST                   300-2500                    
+R224 H2O2 + CH3     CH4 + HO2        2.0e-14 exp(300.0/T)                                 NIST                   300-2500                    
+R225 H2O2 + CH3O    CH4O + HO2       5.0e-15 exp(-1300.0/T)                               NIST                   300-2500                    
+R226 H2O2 + CH3O2   CH4O2 + HO2      4.0e-12 exp(-5000.0/T)                               NIST                   300-2500                    
+R227 H2O2 + CHO     CH2O + HO2       1.69e-13 exp(-3490.0/T)                              NIST                   300-2500                    
+R228 H2S + CH       HS + CH2         2.8e-10                                              NIST                   330                         
+R229 H2S + CH2      HS + CH3         2.0e-12                                              NIST                   295                         
+R230 H2S + H        H2 + HS          3.66e-12(T/298.0)^1.94^ exp(-454.6/T)                NIST                   190-2237                    
+R231 H2S + O        OH + HS          9.2e-12 exp(-1800.0/T)                               JPL                    200-300   Low Temperature   
+R232 H2S + OH       H2O + HS         6.1e-12 exp(-75.0/T)                                 JPL                    200-300   Low Temperature   
+R233 HCN + CNO      HCNO + CN        2.0e-11 exp(-4460.0/T)                               NIST                   500-2500                    
+R234 HNO + C2H5     C2H6 + NO        1.66e-12                                             NIST                   883-953   High Temperature  
+R235 HNO + CH3      CH4 + NO         1.85e-11(T/298.0)^0.76^ exp(-175.6/T)                NIST                   298-2500                    
+R236 HNO + CH3O     CH4O + NO        5.0e-11                                              NIST                   298                         
+R237 HNO + CHO      CH2O + NO        1.0e-12 exp(-1000.0/T)                               NIST                   300-2500                    
+R238 HNO + CN       HCN + NO         3.0e-11                                              NIST                   500-2500                    
+R239 HNO + CNO      HCNO + NO        3.0e-11                                              NIST                   500-2500                    
+R240 HNO + CO       CO2 + NH         3.3e-12 exp(-6190.0/T)                               NIST                   1200-1900 High Temperature  
+R241 HNO2 + CH3     CH4 + NO2        3.55e-7 exp(-10100.0/T)                              NIST                   1000-1100 High Temperature  
+R242 HNO2 + CN      HCN + NO2        2.0e-11                                              NIST                   500-2500                    
+R243 HNO2 + CNO     HCNO + NO2       6.0e-12                                              NIST                   500-2500                    
+R244 HO2 + C2H2     C2H3 + O2        5.0e-14(T/298.0)^1.61^ exp(-7129.7/T)                NIST                   300-2500                    
+R245 HO2 + C2H2     C2H2O + OH       1.0e-14 exp(-4000.3/T)                               NIST                   300-2500                    
+R246 HO2 + C2H3     OH + CH3 + CO    5.0e-11                                              NIST                   300-2500                    
+R247 HO2 + C2H3O    OH + CH3 + CO2   5.0e-11                                              NIST                   300-2500                    
+R248 HO2 + C2H4     C2H4O + OH       1.0e-14 exp(-4000.3/T)                               NIST                   300-2500                    
+R249 HO2 + C2H4O    C2H3O + H2O2     5.0e-12 exp(-6000.4/T)                               NIST                   900-1200  High Temperature  
+R250 HO2 + C2H5     C2H4 + H2O2      5.0e-13                                              NIST                   300-2500                    
+R251 HO2 + C2H5     C2H6 + O2        5.0e-13                                              NIST                   300-2500                    
+R252 HO2 + CH2O     CHO + H2O2       3.3e-12 exp(-5870.5/T)                               NIST                   300-2500                    
+R253 HO2 + CH2O     CH3O + O2        5.63e-12 exp(-9620.6/T)                              NIST                   1200-1800 High Temperature  
+R254 HO2 + CH3O2    CH4O2 + O2       4.1e-13 exp(750.0/T)                                 JPL                    200-300   Low Temperature   
+R255 HO2 + CH4O     CH3O + H2O2      1.6e-13 exp(-6330.0/T)                               NIST                   300-2500                    
+R256 HO2 + CNO      HCNO + O2        3.32e-11                                             NIST                   623-773   High Temperature  
+R257 HO2 + HO2      H2O2 + O2        3.5e-13 exp(430.0/T)                                 JPL                    200-300   Low Temperature   
+R258 HO2 + NH2      NH3 + O2         3.4e-11                                              JPL                    298                         
+R259 HO2 + NO       OH + NO2         3.5e-12 exp(250.0/T)                                 JPL                    200-300   Low Temperature   
+R260 HO2 + NO3      OH + NO2 + O2    3.5e-12                                              JPL                    298                         
+R261 HO2 + O3       OH + O2 + O2     1.0e-14 exp(-490.0/T)                                JPL                    200-300   Low Temperature   
+R262 HS + CH3       CH4S             1.66e-11                                             NIST                   681-723   High Temperature  
+R263 HS + HO2       OH + HSO         1.0e-11                                              NIST                   298                         
+R264 HS + HS        S + H2S          1.5e-11                                              NIST                   298                         
+R265 HS + NO2       NO + HSO         2.9e-11 exp(240.0/T)                                 JPL                    220-420   Low Temperature   
+R266 HS + O         H + SO           1.6e-10                                              NIST                   298                         
+R267 HS + CHO       H2S + CO         5.0e-11                                              Kasting (1990)         298                         
+R268 HS + O2        SO + OH          4.0e-19                                              NIST                   298                         
+R269 HS + O3        O2 + HSO         9.0e-12 exp(-280.0/T)                                JPL                    200-300   Low Temperature   
+R270 HSO + NO2      HSO2 + NO        9.6e-12                                              JPL                    298                         
+R271 HSO + O3       HS + O2 + O2     7.0e-14                                              JPL                    298                         
+R272 HS + CH2O      H2S + CHO        1.7e-11 exp(-800.0/T)                                JPL                    200-300   Low Temperature   
+R273 HSO2 + O2      HO2 + SO2        3.0e-13                                              JPL                    298                         
+R274 HSO3 + O       OH + SO3         1.0e-11                                              Kasting (1990)         298                         
+R275 HSO3 + O2      HO2 + SO3        1.3e-12 exp(-330.0/T)                                JPL                    200-300   Low Temperature   
+R276 N + C2         CN + C           2.8e-11                                              NIST                   298                         
+R277 N + C2H3       C2H2N + H        6.2e-11                                              NIST                   298                         
+R278 N + C2H3       C2H2 + NH        1.2e-11                                              NIST                   298                         
+R279 N + C2H4       HCN + CH3        4.2e-14                                              NIST                   298                         
+R280 N + CH         C + NH           3.0e-11(T/298.0)^0.65^ exp(-1203.0/T)                NIST                   990-1010  High Temperature  
+R281 N + CH         CN + H           1.66e-10(T/298.0)^-0.09^                             NIST                   216-584   Low Temperature   
+R282 N + CH3        H2 + HCN         4.3e-10 exp(-420.0/T)                                NIST                   200-423   Low Temperature   
+R283 N + CH4O       CH3 + HNO        4.0e-10 exp(-4330.0/T)                               NIST                   309-409   Low Temperature   
+R284 N + CN         C + N2           3.0e-10                                              NIST                   300-2500                    
+R285 N + CNO        CO + N2          3.3e-11                                              NIST                   1100-1400 High Temperature  
+R286 N + CNO        CN + NO          1.66e-12                                             NIST                   1400-2000 High Temperature  
+R287 N + H2O        OH + NH          6.03e-11(T/298.0)^1.2^ exp(-19243.6/T)               NIST                   800-3000                    
+R288 N + HCNO       NH + CNO         3.85e-5 exp(-26460.0/T)                              NIST                   1000-3000                   
+R289 N + NH         N2 + H           1.95e-11(T/298.0)^0.51^ exp(-9.6/T)                  NIST                   300-2500                    
+R290 N + NH2        NH + NH          3.0e-13 exp(-7600.0/T)                               NIST                   1000-4000 High Temperature  
+R291 N + NO         O + N2           2.1e-11 exp(100.0/T)                                 JPL                    200-300   Low Temperature   
+R292 N + NO2        N2O + O          5.8e-12 exp(220.0/T)                                 JPL                    200-300   Low Temperature   
+R293 N + O2         NO + O           1.5e-11 exp(-3600.0/T)                               JPL                    200-300   Low Temperature   
+R294 N + O3         NO + O2          2.0e-16                                              JPL                    298                         
+R295 N + OH         NO + H           4.7e-11                                              NIST                   300-2500                    
+R296 N2O + C        CO + N2          8.0e-12                                              NIST                   298                         
+R297 N2O + CH       HCN + NO         3.1e-11 exp(257.4/T)                                 NIST                   200-1250                    
+R298 N2O + CN       N2 + CNO         2.0e-12                                              NIST                   297                         
+R299 N2O + HCN      HCNO + N2        2.0e-11                                              NIST                   1400-1800 High Temperature  
+R300 NH + NH3       NH2 + NH2        5.25e-10 exp(-13470.0/T)                             NIST                   1300-1700                   
+R301 NH + NO        N2O + H          1.17e-10(T/298.0)^-1.03^ exp(-420.0/T)               NIST                   300-4000                    
+R302 NH + NO2       NO + HNO         2.1e-13 exp(1140.2/T)                                NIST                   200-300                     
+R303 NH + NO2       OH + N2O         1.4e-13 exp(1140.2/T)                                NIST                   200-300   Low Temperature   
+R304 NH + O         NO + H           1.16e-10                                             NIST                   250-3000                    
+R305 NH + O         OH + N           1.16e-11                                             NIST                   250-3000                    
+R306 NH + O2        OH + NO          6.74e-14(T/298.0)^0.79^ exp(-601.4/T)                NIST                   298-2200                    
+R307 NH + O2        O + HNO          6.79e-14(T/298.0)^2.0^ exp(-3270.2/T)                NIST                   300-3300                    
+R308 NH + OH        H + HNO          3.32e-11                                             NIST                   298-3000                    
+R309 NH + OH        H2O + N          3.1e-12(T/298.0)^1.2^                                NIST                   298-3000                    
+R310 NH2 + C        CH + NH          9.61e-13 exp(-10500.0/T)                             NIST                   1000-4000                   
+R311 NH2 + C2H2     C2H + NH3        8.2e-13 exp(-2780.0/T)                               NIST                   340-510   Low Temperature   
+R312 NH2 + C2H4     C2H3 + NH3       3.42e-14 exp(-1320.6/T)                              NIST                   250-465   Low Temperature   
+R313 NH2 + C2H4O    C2H3O + NH3      3.5e-13 exp(-1250.0/T)                               NIST                   297-453   Low Temperature   
+R314 NH2 + C2H5     C2H6 + NH        5.1e-12 exp(-4678.6/T)                               NIST                   300-2000                    
+R315 NH2 + C2H6     C2H5 + NH3       2.74e-14(T/298.0)^3.46^ exp(-2820.0/T)               NIST                   300-2000                    
+R316 NH2 + CH3      CH4 + NH         8.4e-10 exp(-4834.9/T)                               NIST                   300-2000                    
+R317 NH2 + CH4      CH3 + NH3        8.77e-15(T/298.0)^3^ exp(-2130.0/T)                  NIST                   300-2000                    
+R318 NH2 + CNO      HCNO + NH        1.71e-11(T/298.0)^1.91^ exp(1039.0/T)                NIST                   1000-3000 High Temperature  
+R319 NH2 + H2O      OH + NH3         2.1e-13(T/298.0)^1.9^ exp(-5725.0/T)                 NIST                   300-3000                    
+R320 NH2 + NO       H2O + N2         4.0e-12 exp(450.0/T)                                 JPL                    200-300   Low Temperature   
+R321 NH2 + NO2      H2O + N2O        2.1e-12 exp(650.0/T)                                 JPL                    200-300   Low Temperature   
+R322 NH2 + O        H + HNO          7.47e-11                                             NIST                   298-3000                    
+R323 NH2 + O        OH + NH          1.16e-11                                             NIST                   298-3000                    
+R324 NH2 + O        H2 + NO          8.3e-12                                              NIST                   298-3000                    
+R325 NH2 + O3       H2O + NO2        4.3e-12 exp(-930.0/T)                                JPL                    200-300                     
+R326 NH2 + OH       H2O + NH         7.69e-13(T/298.0)^1.5^ exp(-230.0/T)                 NIST                   250-3000                    
+R327 NH3 + CH       HCN + H2 + H     7.24e-11 exp(317.0/T)                                NIST                   300-1300                    
+R328 NH3 + CH3      CH4 + NH2        9.55e-14 exp(-4895.0/T)                              NIST                   350-600   Low Temperature   
+R329 NH3 + CN       HCN + NH2        1.66e-11                                             NIST                   300-700   Low Temperature   
+R330 NH3 + CNO      CO + N2H3        6.29e-14(T/298.0)^2.48^ exp(-493.0/T)                NIST                   295-882                     
+R331 NO + C         CO + N           3.49e-11(T/298.0)^-0.02^                             NIST                   200-5000                    
+R332 NO + C         CN + O           5.57e-11(T/298.0)^-0.32^                             NIST                   200-5000                    
+R333 NO + C2H       HCN + CO         3.6e-11                                              NIST                   298                         
+R334 NO + C2H3      CH2O + HCN       5.0e-11(T/298.0)^-3.38^ exp(-516.0/T)                NIST                   200-2000                    
+R335 NO + C2H5O     C2H4O + HNO      1.3e-11                                              NIST                   298                         
+R336 NO + C2HO      CO + HCNO        1.4e-11 exp(320.0/T)                                 NIST                   296-2000                    
+R337 NO + C2HO      HCN + CO2        6.12e-12(T/298.0)^-0.72^ exp(200.0/T)                NIST                   296-2000                    
+R338 NO + CH        N + CHO          1.33e-11                                             NIST                   298                         
+R339 NO + CH        H + CNO          4.0e-11                                              NIST                   298                         
+R340 NO + CH        CO + NH          2.5e-10                                              NIST                   298                         
+R341 NO + CH        O + HCN          1.37e-10                                             NIST                   298                         
+R342 NO + CH        CN + OH          1.4e-10                                              NIST                   289                         
+R343 NO + CH2       HCNO + H         4.17e-12 exp(-3007.0/T)                              NIST                   1100-2600 High Temperature  
+R344 NO + CH2       HCN + OH         8.32e-13 exp(-1443.0/T)                              NIST                   1100-2600 High Temperature  
+R345 NO + CH3       HCN + H2O        4.0e-12 exp(-7900.0/T)                               NIST                   1300-2080 High Temperature  
+R346 NO + CH3O      CH2O + HNO       4.0e-12(T/298.0)^-0.7^                               NIST                   200-400   Low Temperature   
+R347 NO + CH3O2     CH3O + NO2       2.8e-12 exp(300.0/T)                                 JPL                    200-300   Low Temperature   
+R348 NO + CHO       CO + HNO         1.2e-11                                              NIST                   295-2500                    
+R349 NO + CN        CO + N2          1.79e-10 exp(-4040.0/T)                              NIST                   687-1500  High Temperature  
+R350 NO + CNO       CO + N2O         5.15e-11(T/298.0)^-1.34^ exp(-360.0/T)               NIST                   300-3000                    
+R351 NO + CNO       CO2 + N2         1.29e-10(T/298.0)^-1.97^ exp(-560.0/T)               NIST                   300-3000                    
+R352 NO + CNO       CO + N2 + O      2.78e-11(T/298.0)^-1.73^ exp(-380.0/T)               NIST                   300-3000                    
+R353 NO + NO3       NO2 + NO2        1.5e-11 exp(170.0/T)                                 JPL                    200-300   Low Temperature   
+R354 NO + O3        NO2 + O2         3.0e-12 exp(-1500.0/T)                               JPL                    200-300   Low Temperature   
+R355 NO2 + C        CO + NO          1.1e-10                                              NIST                   300                         
+R356 NO2 + C2H      C2HO + NO        7.6e-11 exp(130.0/T)                                 NIST                   288-800                     
+R357 NO2 + C2H3     C2H3O + NO       4.21e-11(T/298.0)^-0.6^                              NIST                   220-336   Low Temperature   
+R358 NO2 + C2H3O    CO2 + CH3 + NO   7.3e-11 exp(80.6/T)                                  NIST                   298-328   Low Temperature   
+R359 NO2 + C2H5O    C2H4O + HNO2     1.3e-11(T/298.0)^-1.0^                               NIST                   200-300   Low Temperature   
+R360 NO2 + C2HO     CO2 + HCNO       9.72e-12 exp(171.0/T)                                NIST                   298-423   Low Temperature   
+R361 NO2 + C2HO     CO + CHO + NO    1.46e-11 exp(171.0/T)                                NIST                   298-423   Low Temperature   
+R362 NO2 + CH       CHO + NO         1.45e-10                                             NIST                   298                         
+R363 NO2 + CH2      CH2O + NO        6.91e-11                                             NIST                   295                         
+R364 NO2 + CH3      CH3O + NO        2.26e-11                                             NIST                   233-1700                    
+R365 NO2 + CH3      CH2O + HNO       5.4e-12                                              NIST                   298                         
+R366 NO2 + CH3O     CH2O + HNO2      1.1e-11 exp(-1200.0/T)                               JPL                    200-300   Low Temperature   
+R367 NO2 + CH4      HNO2 + CH3       1.58e-9 exp(-19364.0/T)                              NIST                   600-1100                    
+R368 NO2 + CHO      NO + CHO2        2.71e-11                                             NIST                   296                         
+R369 NO2 + CHO      NO + CO + OH     4.0e-11                                              NIST                   298                         
+R370 NO2 + CHO      NO + CO2 + H     1.94e-10(T/298.0)^-0.75^ exp(-970.0/T)               NIST                   294-1650                    
+R371 NO2 + CN       NO + CNO         4.0e-11 exp(186.0/T)                                 NIST                   500-2500                    
+R372 NO2 + CN       CO + N2O         7.11e-12                                             NIST                   298                         
+R373 NO2 + CN       CO2 + N2         5.2e-12                                              NIST                   298                         
+R374 NO2 + CNO      CO2 + N2O        1.64e-11                                             NIST                   296                         
+R375 NO2 + CNO      CO + NO + NO     1.3e-12                                              NIST                   296                         
+R376 NO2 + NO3      NO + NO2 + O2    4.5e-14 exp(-1260.0/T)                               JPL                    200-300   Low Temperature   
+R377 NO2 + O3       NO3 + O2         1.2e-13 exp(-2450.0/T)                               JPL                    200-300   Low Temperature   
+R378 NO3 + C2H3O    C2H2O + HNO3     2.5e-11                                              NIST                   298                         
+R379 NO3 + C2H4O    C2H3O + HNO3     1.4e-12 exp(-1900.0/T)                               JPL                    200-300   Low Temperature   
+R380 NO3 + C2H5     C2H5O + NO2      4.0e-11                                              NIST                   298                         
+R381 NO3 + CH3      CH3O + NO2       3.5e-11                                              NIST                   298                         
+R382 NO3 + CH3O     CH3O2 + NO2      1.8e-12                                              NIST                   298                         
+R383 NO3 + CH3O     CH2O + HNO3      1.5e-12                                              NIST                   298                         
+R384 NO3 + CH3O2    CH3O + NO2 + O2  1.3e-12                                              NIST                   298                         
+R385 NO3 + CH4O     CH3O + HNO3      9.4e-13 exp(-2646.0/T)                               NIST                   258-367   Low Temperature   
+R386 NO3 + HCNO     CO2 + NO + HNO   1.66e-12 exp(-5027.0/T)                              NIST                   623-773   High Temperature  
+R387 NO3 + NO3      NO2 + NO2 + O2   8.5e-13 exp(-2450.0/T)                               JPL                    200-300   Low Temperature   
+R388 O + C2         CO + C           6.0e-10                                              NIST                   8000      High Temperature  
+R389 O + C2H        CO + CH          1.7e-11                                              NIST                   300-2500                    
+R390 O + C2H2       H + C2HO         1.5e-11 exp(-2280.0/T)                               NIST                   300-2500                    
+R391 O + C2H2       CO + CH2         3.49e-12(T/298.0)^1.5^ exp(-850.0/T)                 NIST                   300-2500                    
+R392 O + C2H2N      CH2O + CN        8.49e-11(T/298.0)^0.64^                              NIST                   253-353   Low Temperature   
+R393 O + C2H3       C2H3O            5.5e-11(T/298.0)^0.2^ exp(215.0/T)                   NIST                   200-2500                    
+R394 O + C2H3       C2H2 + OH        5.5e-11(T/298.0)^0.2^ exp(215.0/T)                   NIST                   200-2500                    
+R395 O + C2H3       C2H2O + H        1.6e-10                                              NIST                   300-2500                    
+R396 O + C2H4       C2H3O + H        3.85e-13(T/298.0)^1.88^ exp(-91.4/T)                 NIST                   300-2000                    
+R397 O + C2H4       C2H3 + OH        1.33e-12(T/298.0)^1.91^ exp(-1880.0/T)               NIST                   290-1510                    
+R398 O + C2H4       CH3 + CHO        1.5e-12(T/298.0)^1.55^ exp(-215.0/T)                 NIST                   300-2500                    
+R399 O + C2H4       C2H2O + H2       5.5e-14(T/298.0)^1.88^ exp(-91.4/T)                  NIST                   300-2000                    
+R400 O + C2H4       CH2O + CH2       8.3e-12 exp(-754.0/T)                                NIST                   226-380   Low Temperature   
+R401 O + C2H4O      C2H3O + OH       1.8e-11 exp(-1100.0/T)                               JPL                    200-300   Low Temperature   
+R402 O + C2H5       C2H5O            6.3e-11(T/298.0)^0.03^ exp(198.45/T)                 NIST                   200-2500                    
+R403 O + C2H5       C2H4O + H        1.33e-10                                             NIST                   300-2500                    
+R404 O + C2H5       C2H4 + OH        6.3e-12(T/298.0)^0.03^ exp(198.45/T)                 NIST                   200-2500                    
+R405 O + C2H5       CH2O + CH3       2.67e-11                                             NIST                   300-2500                    
+R406 O + C2H6       C2H5 + OH        8.54e-12(T/298.0)^1.5^ exp(-2920.0/T)                NIST                   300-1200                    
+R407 O + CH         OH + C           2.52e-11 exp(-2380.0/T)                              NIST                   10-6000                     
+R408 O + CH         CO + H           6.6e-11                                              NIST                   300-2000                    
+R409 O + CH2        CH + OH          7.2e-12                                              NIST                   300-2500                    
+R410 O + CH2        CHO + H          5.0e-11                                              NIST                   1200-1800 High Temperature  
+R411 O + CH2        CO + H + H       1.2e-10                                              NIST                   300-2500                    
+R412 O + CH2        CO + H2          7.3e-11                                              NIST                   300-2500                    
+R413 O + CH2O       CHO + OH         1.78e-11(tl[i]/298.0,0.57) \exp{(-1390.0/T)          NIST                   250-2200                    
+R414 O + CH3        CH3O             7.51e-14(T/298.0)^-2.12^ exp(-314.0/T)               NIST                   300-2500                    
+R415 O + CH3        CH2O + H         1.4e-10                                              NIST                   300-2500                    
+R416 O + CH3        CO + H2 + H      5.72e-11                                             NIST                   290-900                     
+R417 O + CH3NO2     OH + CH2O + NO   2.32e-11 exp(-2620.0/T)                              NIST                   300-410   Low Temperature   
+R418 O + CH3NO3     OH + CH2O + NO2  2.49e-11 exp(-2650.0/T)                              NIST                   294-473   Low Temperature   
+R419 O + CH3O       CH2O + OH        7.0e-11                                              NIST                   300-2500                    
+R420 O + CH3O       CH3 + O2         2.5e-11                                              NIST                   298                         
+R421 O3 + C2H2      CO + CH2O2       1.0e-14 exp(-4100/T)                                 JPL                    200-300   Low Temperature   
+R422 O + CH3O2      CH3O + O2        8.3e-11                                              NIST                   300-2000                    
+R423 O + CH4        CH3 + OH         2.26e-12(T/298.0)^2.2^ exp(-3820.0/T)                NIST                   420-1520                    
+R424 O + CH4O       CH3O + OH        1.66e-11 exp(-2360.0/T)                              NIST                   300-1000                    
+R425 O + CH4O2      CH3O2 + OH       3.3e-11 exp(-2390.0/T)                               NIST                   300-1000                    
+R426 O + CHO        CO + OH          5.0e-11                                              NIST                   300-2500                    
+R427 O + CHO        CO2 + H          5.0e-11                                              NIST                   300-2500                    
+R428 O + CHO2       CO2 + OH         1.44e-11                                             JPL                    298                         
+R429 O + CN         C + NO           5.37e-11 exp(-13711.0/T)                             NIST                   200-5000                    
+R430 O + CN         CO + N           3.4e-11 exp(-210.0/T)                                NIST                   500-2500                    
+R431 O + CNO        CO + NO          7.5e-11                                              NIST                   500-2500                    
+R432 O + CNO        CN + O2          4.05e-10(T/298.0)^-1.43^ exp(-3500.0/T)              NIST                   500-2500                    
+R433 O + H2         H + OH           3.44e-13(T/298.0)^2.67^ exp(-3160.0/T)               NIST                   300-2500                    
+R434 O + H2O2       OH + HO2         1.4e-12 exp(-2000.0/T)                               JPL                    200-300   Low Temperature   
+R435 O + HCN        H + CNO          7.0e-12 exp(-4000.0/T)                               JPL                    470-900                     
+R436 O + HCN        CO + NH          3.0e-12 exp(-4000.0/T)                               JPL                    470-900                     
+R437 O + HCNO       CNO + OH         6.16e-13(T/298.0)^2.11^ exp(-5750.0/T)               NIST                   500-2500                    
+R438 O + HCNO       CO2 + NH         4.93e-13(T/298.0)^1.41^ exp(-4290.0/T)               NIST                   500-2500                    
+R439 O + HNO        OH + NO          6.0e-11                                              NIST                   300-2500                    
+R440 O + HNO4       HNO3 + O2        7.8e-11 exp(-3400.0/T)                               JPL                    200-300   Low Temperature   
+R441 O + HO2        OH + O2          3.0e-11 exp(200.0/T)                                 JPL                    200-300   Low Temperature   
+R442 O + NO2        NO + O2          5.1e-12 exp(210.0/T)                                 JPL                    200-300   Low Temperature   
+R443 O + NO3        NO2 + O2         1.0e-11                                              JPL                    200-300   Low Temperature   
+R444 O + O3         O2 + O2          8.0e-12 exp(-2060.0/T)                               JPL                    200-300   Low Temperature   
+R445 O + OH         O2 + H           2.2e-11 exp(120.0/T)                                 JPL                    200-300   Low Temperature   
+R446 O + S2         S + SO           1.66e-11                                             NIST                   298                         
+R447 O(^1^D) + C2H4 C2H3 + OH        2.19e-10                                             NIST                   298                         
+R448 O(^1^D) + C2H6 C2H5 + OH        6.29e-10                                             NIST                   300                         
+R449 O(^1^D) + CH4  CH3O + H         3.5e-11                                              JPL                    200-300   Low Temperature   
+R450 O(^1^D) + CH4  CH3 + OH         1.31e-10                                             JPL                    200-300   Low Temperature   
+R451 O(^1^D) + CH4  CH2O + H2        9.0e-12                                              JPL                    200-300   Low Temperature   
+R452 O(^1^D) + CH4O CH3O2 + H        9.0e-11                                              NIST                   300                         
+R453 O(^1^D) + CH4O CH3O + OH        4.2e-10                                              NIST                   300                         
+R454 O(^1^D) + CO2  CO2 + O          7.5e-11 exp(115.0/T)                                 JPL                    200-300   Low Temperature   
+R455 O(^1^D) + H2   H + OH           1.2e-10                                              JPL                    200-300   Low Temperature   
+R456 O(^1^D) + H2O  OH + OH          1.63e-10 exp(60.0/T)                                 JPL                    200-300   Low Temperature   
+R457 O(^1^D) + HCNO CO2 + NH         4.6e-11                                              NIST                   298                         
+R458 O(^1^D) + N2   O + N2           2.15e-11 exp(110.0/T)                                JPL                    200-300   Low Temperature   
+R459 O(^1^D) + N2O  O2 + N2          4.63e-11 exp(20.0/T)                                 JPL                    200-300   Low Temperature   
+R460 O(^1^D) + N2O  NO + NO          7.25e-11 exp(20.0/T)                                 JPL                    200-300   Low Temperature   
+R461 O(^1^D) + NH3  OH + NH2         2.5e-10                                              JPL                    200-300   Low Temperature   
+R462 O(^1^D) + NO   O2 + N           8.5e-11                                              NIST                   300                         
+R463 O(^1^D) + NO2  O2 + NO          3.0e-10                                              NIST                   300                         
+R464 O(^1^D) + O2   O + O2           3.3e-11 exp(55.0/T)                                  JPL                    200-300   Low Temperature   
+R465 O(^1^D) + O3   O2 + O2          1.2e-10                                              JPL                    200-300   Low Temperature   
+R466 O(^1^D) + O3   O2 + O + O       1.2e-10                                              JPL                    200-300   Low Temperature   
+R467 O(^1^D) + OCS  CO + SO          3.0e-10                                              NIST                   300                         
+R468 O3 + C2H4      CH2O + CH2O2     1.2e-14 exp(-2630.0/T)                               JPL                    178-360   Low Temperature   
+R469 O3 + C2H5      C2H5O + O2       3.32e-14                                             NIST                   298                         
+R470 O3 + CH3       CH3O + O2        5.4e-12 exp(-220.0/T)                                JPL                    200-300   Low Temperature   
+R471 O3 + CH3O      CH3O2 + O2       2.53e-14                                             NIST                   298                         
+R472 O3 + CH3O2     CH3O + O2 + O2   2.9e-16 exp(-1000.0/T)                               JPL                    200-300   Low Temperature   
+R473 OCS + OH       CO2 + HS         1.1e-13 exp(-1200.0/T)                               JPL                    200-300   Low Temperature   
+R474 OCS + CH       CHO + CS         2.0e-10 exp(190.0/T)                                 NIST                   297-667   Low Temperature   
+R475 OCS + O        CO + SO          2.1e-11 exp(-2200.0/T)                               JPL                    200-300   Low Temperature   
+R476 OH + C2        CO + CH          8.3e-12                                              NIST                   2200      High Temperature  
+R477 OH + C2H       CO + CH2         3.0e-11                                              NIST                   300-2500                    
+R478 OH + C2H       C2H2 + O         3.0e-11                                              NIST                   300-2500                    
+R479 OH + C2H2      C2H2O + H        4.12e-13(T/298.0)^2.3^ exp(-6790.0/T)                NIST                   500-2500                    
+R480 OH + C2H2      C2H + H2O        1.03e-13(T/298.0)^2.68^ exp(-6060.0/T)               NIST                   300-2500                    
+R481 OH + C2H2      C2HO + H2        1.91e-13                                             NIST                   295                         
+R482 OH + C2H2      CO + CH3         6.34e-18(T/298.0)^4.0^ exp(1010.0/T)                 NIST                   500-2500                    
+R483 OH + C2H2O     CO + CH3O        1.0e-11                                              NIST                   298                         
+R484 OH + C2H2O     CO2 + CH3        4.98e-12                                             NIST                   800-1200  High Temperature  
+R485 OH + C2H3      C2H4O            5.0e-11                                              NIST                   300-2500                    
+R486 OH + C2H3      C2H2 + H2O       5.0e-11                                              NIST                   300-2500                    
+R487 OH + C2H3O     C2H2O + H2O      2.0e-11                                              NIST                   300-2500                    
+R488 OH + C2H4      C2H3 + H2O       1.66e-13(T/298.0)^2.75^ exp(-2100.0/T)               NIST                   300-2500                    
+R489 OH + C2H4O     C2H3O + H2O      4.4e-12 exp(364.0/T)                                 NIST                   200-350   Low Temperature   
+R490 OH + C2H5      C2H4 + H2O       4.0e-11                                              NIST                   300-2500                    
+R491 OH + C2H6      C2H5 + H2O       8.7e-12 exp(-1070.0/T)                               JPL                    200-300   Low Temperature   
+R492 OH + CH2       CH2O + H         3.0e-11                                              NIST                   300-2500                    
+R493 OH + CH2O      CHO + H2O        5.5e-12 exp(125.0/T)                                 JPL                    200-300   Low Temperature   
+R494 OH + CH2O2     CHO2 + H2O       4.0e-13                                              JPL                    200-300   Low Temperature   
+R495 OH + CH3       CH3O + H         6.45e-13(T/298.0)^1^ exp(-6012.0/T)                  NIST                   300-3000                    
+R496 OH + CH3       CH2 + H2O        1.2e-10 exp(-1400.0/T)                               NIST                   300-1000                    
+R497 OH + CH3       CH2O + H2        2.59e-13(T/298.0)^-0.53^ exp(-5440.0/T)              NIST                   600-2500  High Temperature  
+R498 OH + CH3NO3    CH2O + NO2 + H2O 8.0e-13 exp(-1000.0/T)                               JPL                    200-300   Low Temperature   
+R499 OH + CH3O      CH2O + H2O       3.0e-11                                              NIST                   300-2500                    
+R500 OH + CH3O2     CH4O + O2        1.0e-10                                              NIST                   300-2500                    
+R501 OH + CH4       CH3 + H2O        2.45e-12 exp(-1775.0/T)                              JPL                    200-300   Low Temperature   
+R502 OH + CH4O      CH3O + H2O       2.9e-12 exp(-345.0/T)                                JPL                    200-300   Low Temperature   
+R503 OH + CH4O2     CH3O2 + H2O      3.8e-12 exp(200.0/T)                                 JPL                    200-300   Low Temperature   
+R504 OH + CHO       CO + H2O         1.69e-10                                             NIST                   300-2500                    
+R505 OH + CHO2      CO2 + H2O        1.0e-10                                              NIST                   300                         
+R506 OH + CN        H + CNO          7.0e-11                                              NIST                   500-2500                    
+R507 OH + CN        O + HCN          1.0e-11 exp(-1000.0/T)                               NIST                   500-2500                    
+R508 OH + CNO       CHO + NO         4.0e-13                                              NIST                   1500      High Temperature  
+R509 OH + CNO       HCNO + O         5.38e-14(T/298.0)^2.27^ exp(-497.0/T)                NIST                   500-2500                    
+R510 OH + CNO       CO + NO + H      9.3e-15                                              NIST                   1000      High Temperature  
+R511 OH + CO        CO2 + H          5.4e-14(T/298.0)^1.5^ exp(250.0/T)                   NIST                   300-2000                    
+R512 OH + H2        H2O + H          2.8e-12 exp(-1800.0/T)                               JPL                    200-300   Low Temperature   
+R513 OH + H2O2      H2O + HO2        2.9e-12 exp(-160.0/T)                                JPL                    200-300   Low Temperature   
+R514 OH + HCN       HCNO + H         4.65e-11 exp(-1860.0/T)                              NIST                   1500-2400 High Temperature  
+R515 OH + HCN       CO + NH2         1.1e-13 exp(-5890.0/T)                               NIST                   500-2500                    
+R516 OH + HCN       CN + H2O         1.84e-13(T/298.0)^1.5^ exp(-3890.0/T)                NIST                   298-2840                    
+R517 OH + HCNO      CNO + H2O        9.43e-14(T/298.0)^2^ exp(-1290.0/T)                  NIST                   500-2500                    
+R518 OH + HCNO      CO2 + NH2        1.54e-14(T/298.0)^1.5^ exp(-1810.0/T)                NIST                   1250-1860 High Temperature  
+R519 OH + HNO       H2O + NO         8.0e-11 exp(-500.0/T)                                NIST                   300-2000                    
+R520 OH + HNO2      H2O + NO2        1.8e-11 exp(-390.0/T)                                JPL                    200-300   Low Temperature   
+R521 OH + HNO4      H2O + NO2 + O2   1.3e-12 exp(380.0/T)                                 JPL                    200-300   Low Temperature   
+R522 OH + HO2       H2O + O2         4.8e-11 exp(250.0/T)                                 JPL                    200-300   Low Temperature   
+R523 OH + NH3       H2O + NH2        1.7e-12 exp(-710.0/T)                                JPL                    200-300   Low Temperature   
+R524 OH + NO3       HO2 + NO2        2.0e-11                                              NIST                   298                         
+R525 OH + O3        HO2 + O2         1.7e-12 exp(-940.0/T)                                JPL                    200-300   Low Temperature   
+R526 OH + OH        H2O + O          1.8e-12                                              JPL                    200-300   Low Temperature   
+R527 OH + S         H + SO           6.6e-11                                              JPL                    298                         
+R528 OH + SO        SO2 + H          2.7e-11 exp(355.0/T)                                 JPL                    200-300   Low Temperature   
+R529 S + C2H6       C2H5 + HS        2.04e-10 exp(-7420.0/T)                              NIST                   880-1150  High Temperature  
+R530 S + CH4        CH3 + HS         3.4e-10 exp(-10000.0/T)                              NIST                   1140-1480 High Temperature  
+R531 S + H2         H + HS           2.24e-10 exp(-9710.0/T)                              NIST                   910-1660  High Temperature  
+R532 S + H2S        HS + HS          1.38e-10 exp(-3720.0/T)                              NIST                   1050-1540 High Temperature  
+R533 S + HS         H + S2           4.0e-11                                              NIST                   295                         
+R534 S + NO         SO + N           1.75e-10 exp(-20206.0/T)                             NIST                   2420-3870                   
+R535 S + NO2        NO + SO          4.9e-11 exp(84.2/T)                                  NIST                   296-410   Low Temperature   
+R536 S + O2         SO + O           2.3e-12                                              JPL                    200-300   Low Temperature   
+R537 S + O3         O2 + SO          1.2e-11                                              JPL                    298                         
+R538 S + OCS        CO + S2          1.5e-12 exp(-1260.0/T)                               NIST                   300-2570                    
+R539 S + SO2        SO + SO          9.77e-12 exp(-4546.0/T)                              NIST                   1120-1540 High Temperature  
+R540 CS + O2        OCS + O          2.9e-19                                              JPL                    298                         
+R541 SO + NO2       SO2 + NO         1.4e-11                                              JPL                    200-300   Low Temperature   
+R542 CS + NO2       OCS + NO         7.6e-17                                              JPL                    298                         
+R543 SO + CHO       HSO + CO         5.5e-11(T)^-0.4^                                     Kasting (1990)                   Low Temperature   
+R544 SO + O2        SO2 + O          1.25e-13 exp(-2190.0/T)                              JPL                    200-300   Low Temperature   
+R545 SO + O3        SO2 + O2         3.4e-12 exp(-1100.0/T)                               JPL                    200-300   Low Temperature   
+R546 SO2 + C2H      CO + OCS + H     1.1e-11                                              NIST                   298                         
+R547 SO2 + CH       CHO + SO         1.32e-10 exp(250.0/T)                                NIST                   295-665   Low Temperature   
+R548 SO2 + CH2      CH2O + SO        4.9e-12                                              NIST                   295                         
+R549 SO2 + CN       CNO + SO         4.4e-12                                              NIST                   298                         
+R550 SO2 + H        OH + SO          4.58e-8(T/298.0)^-2.3^ exp(-15635.0/T)               NIST                   900-1800  High Temperature  
+R551 SO2 + HO2      HSO2 + O2        8.6e-10 exp(-5230.0/T)                               NIST                   400-2000                    
+R552 SO2 + NO2      SO3 + NO         1.05e-11 exp(-13591.0/T)                             NIST                   703-1850                    
+R553 SO2 + O        SO + O2          8.3e-12 exp(-9800.0/T)                               NIST                   440-3000                    
+R554 SO3 + H        OH + SO2         1.46e-11(T/298.0)^1.22^ exp(-1672.0/T)               NIST                   700-2000                    
+R555 SO3 + O        SO2 + O2         1.06e-13(T/298.0)^2.57^ exp(-14673.0/T)              NIST                   1000-2000                   
+R556 SO3 + OH       HO2 + SO2        9.73e-14(T/298.0)^2.46^ exp(-13711.0/T)              NIST                   800-2000                    
+R557 SO3 + SO       SO2 + SO2        2.0e-15                                              NIST                   298                         
+R558 HSO + O2       OH + SO2         1.69e-15                                             NIST                   298                         
+R559 SO + SO        SO2 + S          3.5e-15                                              NIST                   298                         
+R560 HS + H         H2 + S           2.16e-11                                             NIST                   295                         
+R561 CHO + CHO      CH2O + CO        3.0e-11                                              NIST                   300-2500                    
+R562 SO2^1^ + O2    O + SO3          1.0e-16                                              Turco et al. (1982)              Low Temperature   
+R563 SO2^1^ + SO2   SO + SO3         4.0e-12                                              Turco et al. (1982)              Low Temperature   
+R564 SO2^3^ + SO2   SO + SO3         7.0e-14                                              Turco et al. (1982)              Low Temperature   
+R565 SO3 + H2O      H2SO4            1.2e-15                                              NIST                   298                         
+R566 HSO3 + OH      H2O + SO3        1.0e-11                                              Kasting (1990)                   Low Temperature   
+R567 HSO3 + H       H2 + SO3         1.0e-11                                              Kasting (1990)                   Low Temperature   
+R568 NO2 + CHO      CO + HNO2        3.49e-24(T/298.0)^3.29^ exp(-1180.0/T)               NIST                   294-1650                    
+R569 S + CHO        HS + CO          5.0e-11                                              Kasting (1990)                   Low Temperature   
+R570 S + HO2        HS + O2          1.5e-11                                              Kasting (1990)                   Low Temperature   
+R571 S + HO2        SO + OH          1.5e-11                                              Kasting (1990)                   Low Temperature   
+R572 S + CO2        SO + CO          1.0e-20                                              Yung and Demore (1999)           Low Temperature   
+R573 HSO + NO       HNO + SO         3.7e-12 exp(250.0/T)                                 Kasting (1990)                   Low Temperature   
+R574 HSO + OH       H2O + SO         4.8e-11 exp(250.0/T)                                 Kasting (1990)                   Low Temperature   
+R575 HSO + H        HS + OH          7.29e-11                                             Kasting (1990)                   Low Temperature   
+R576 HSO + H        H2 + SO          6.48e-12                                             Kasting (1990)                   Low Temperature   
+R577 HSO + HS       H2S + SO         1.0e-12                                              Kasting (1990)                   Low Temperature   
+R578 HSO + O        OH + SO          3.0e-11 exp(200.0/T)                                 Kasting (1990)                   Low Temperature   
+R579 HSO + S        HS + SO          1.0e-11                                              Kasting (1990)                   Low Temperature   
+R580 H + C3H4^2^    H + C3H4^1^      1.0e-11 exp(-1000.0/T)                               Yung and Demore (1999)           Low Temperature   
+R581 H + C3H5       C3H4^1^ + H2     6.0e-12                                              Yung and Demore (1999)           Low Temperature   
+R582 H + C3H5       C3H4^2^ + H2     6.0e-12                                              Yung and Demore (1999)           Low Temperature   
+R583 H + C3H5       CH4 + C2H2       6.0e-12                                              Yung and Demore (1999)           Low Temperature   
+R584 H + C3H6       C3H5 + H2        4.4e-13(T/298.0)^2.5^ exp(-1250.0/T)                 NIST                   300-2500                    
+R585 H + C3H7       C3H6 + H2        5.0e-11                                              Yung and Demore (1999)           Low Temperature   
+R586 H + C3H7       C2H5 + CH3       6.0e-11                                              Yung and Demore (1999)           Low Temperature   
+R587 H + C4H3       C2H2 + C2H2      3.3e-12                                              Yung and Demore (1999)           Low Temperature   
+R588 H + C4H3       C4H2 + H2        6.0e-12                                              Yung and Demore (1999)           Low Temperature   
+R589 H + C4H5       C4H4 + H2        6.0e-12                                              Yung and Demore (1999)           Low Temperature   
+R590 H + C4H9       C4H8 + H2        1.5e-12                                              NIST                   300-2500                    
+R591 H + C6H3       C2H2 + C4H2      3.3e-12                                              Yung and Demore (1999)           Low Temperature   
+R592 H + C6H3       C6H2 + H2        6.0e-12                                              Yung and Demore (1999)           Low Temperature   
+R593 CH + C2H2      C3H2 + H         3.5e-10 exp(61.0/T)                                  Yung and Demore (1999)           Low Temperature   
+R594 CH + C2H4      C3H4^2^ + H      2.23e-10 exp(173.0/T)                                Yung and Demore (1999)           Low Temperature   
+R595 CH + C2H6      C3H6 + H         1.8e-10 exp(132.0/T)                                 Yung and Demore (1999)           Low Temperature   
+R596 CH21 + H2      CH2 + H2         1.26e-11                                             Yung and Demore (1999)           Low Temperature   
+R597 CH21 + H2      CH3 + H          9.24e-11                                             Yung and Demore (1999)           Low Temperature   
+R598 CH21 + CH4     CH2 + CH4        1.2e-11                                              Yung and Demore (1999)           Low Temperature   
+R599 CH21 + CH4     CH3 + CH3        5.9e-11                                              Yung and Demore (1999)           Low Temperature   
+R600 CH2 + C2H2     C3H2 + H2        1.0e-10 exp(-3332.0/T)                               Yung and Demore (1999)           Low Temperature   
+R601 CH2 + C2H2     C3H3 + H         1.0e-10 exp(-3332.0/T)                               Yung and Demore (1999)           Low Temperature   
+R602 CH3 + C2H3     C3H5 + H         6.5e-13                                              Yung and Demore (1999)           Low Temperature   
+R603 CH3 + C3H5     CH4 + C3H4^1^    6.5e-13                                              Yung and Demore (1999)           Low Temperature   
+R604 CH3 + C3H5     CH4 + C3H4^2^    6.5e-13                                              Yung and Demore (1999)           Low Temperature   
+R605 CH3 + C3H7     CH4 + C3H6       1.85e-12 exp(339.0/T)                                Yung and Demore (1999)           Low Temperature   
+R606 CH3 + C3H8     CH4 + C3H7       1.3e-24(T)^4.0^ exp(-4175.0/T)                       Yung and Demore (1999)           Low Temperature   
+R607 CH3 + C4H5     CH4 + C4H4       6.5e-13                                              Yung and Demore (1999)           Low Temperature   
+R608 C2 + CH4       C2H + CH3        5.5e-11 exp(-297.0/T)                                Yung and Demore (1999)           Low Temperature   
+R609 C2H + C2H2     C4H2 + H         1.25e-10(T/298.0)^0.24^ exp(37.3/T)                  NIST                   200-2000                    
+R610 C2H + C2H4     C4H4 + H         2.0e-11                                              NIST                   300-2500                    
+R611 NO + CN        CNO + N          1.6e-10 exp(-21168.0/T)                              NIST                   500-2500                    
+R612 C2H + C3H8     C2H2 + C3H7      6.0e-12                                              NIST                   300-2500                    
+R613 C2H + C4H2     C6H2 + H         1.5e-10                                              Yung and Demore (1999)           Low Temperature   
+R614 C2H + C4H10    C2H2 + C4H9      1.0e-11                                              NIST                   300-2500                    
+R615 C2H + C6H2     C8H2 + H         3.75e-12                                             Yung and Demore (1999)           Low Temperature   
+R616 C2H + C8H2     Haze             3.75e-12                                             Yung and Demore (1999)           Low Temperature   
+R617 C2H3 + C2H3    C2H4 + C2H2      1.8e-11                                              Yung and Demore (1999)           Low Temperature   
+R618 C2H5 + C2H5    C2H6 + C2H4      1.2e-11 exp(-540.0/T)                                Yung and Demore (1999)           Low Temperature   
+R619 C3H2 + C2H2    C4H2 + CH2       5.0e-13                                              Yung and Demore (1999)           Low Temperature   
+R620 C3H3 + C2H2    C4H2 + CH3       2.0e-13                                              Yung and Demore (1999)           Low Temperature   
+R621 C3H5 + H2      C3H6 + H         1.39e-13(T/298.0)^2.38^ exp(-9560.0/T)               NIST                   300-2500                    
+R622 C3H7 + H2      C3H8 + H         3.19e-14(T/298.0)^2.84^ exp(-4600.0/T)               NIST                   300-2500                    
+R623 C4H + H2       C4H2 + H         6.3e-12 exp(-1450.0/T)                               Yung and Demore (1999)           Low Temperature   
+R624 C4H + CH4      C4H2 + CH3       9.0e-12 exp(-250.0/T)                                Yung and Demore (1999)           Low Temperature   
+R625 C4H + C2H2     C6H2 + H         1.5e-10                                              Yung and Demore (1999)           Low Temperature   
+R626 C4H + C2H6     C4H2 + C2H5      2.1e-11                                              Yung and Demore (1999)           Low Temperature   
+R627 C4H + C4H2     C8H2 + H         3.75e-12                                             Yung and Demore (1999)           Low Temperature   
+R628 C4H + C6H2     Haze             3.75e-12                                             Yung and Demore (1999)           Low Temperature   
+R629 C4H + C8H2     Haze             3.75e-12                                             Yung and Demore (1999)           Low Temperature   
+R630 C4H5 + H2      C4H6^1 + H       1.8e-11 exp(-1699/T)                                 Yung and Demore (1999)           Low Temperature   
+R631 C4H5 + C2H2    C6H6 + H         3.0e-12 exp(-1861/T)                                 Yung and Demore (1999)           Low Temperature   
+R632 C6H + H2       C6H2 + H         6.3e-12 exp(-1450.0/T)                               Yung and Demore (1999)           Low Temperature   
+R633 C6H + CH4      C6H2 + CH3       9.0e-12 exp(-250.0/T)                                Yung and Demore (1999)           Low Temperature   
+R634 C6H + C2H2     C8H2 + H         3.75e-12                                             Yung and Demore (1999)           Low Temperature   
+R635 C6H + C2H6     C6H2 + C2H5      2.1e-11                                              Yung and Demore (1999)           Low Temperature   
+R636 C6H + C4H2     Haze             3.75e-12                                             Yung and Demore (1999)           Low Temperature   
+R637 C6H + C6H2     Haze             3.75e-12                                             Yung and Demore (1999)           Low Temperature   
+R638 C6H + C8H2     Haze             3.75e-12                                             Yung and Demore (1999)           Low Temperature   
+R639 N2H4 + H       N2H3 + H2        1.17e-11 exp(-1260.0/T)                              NIST                   222-657   Low Temperature   
+R640 NO2 + CH3      CH3NO2           3.44e-11(T/298.0)^-0.6^                              NIST                   300-1400                    
+R641 N2H3 + H       NH2 + NH2        2.66e-12                                             NIST                   300                         
+R642 N2H3 + N2H3    N2H4 + N2H2      1.9e-11                                              NIST                   298                         
+R643 N2H3 + N2H3    NH3 + NH3 + N2   5.0e-12                                              NIST                   423                         
+R644 NH2 + OH       NH3 + O          3.32e-13(T/298.0)^0.4^ exp(-250.2/T)                 NIST                   250-3000                    
+R645 O2 + CHO2      HO2 + CO2        2.0e-12                                              NIST                   220-430   Low Temperature   
+M1   C + C          C2               5.46e-31(T/298.0)^-1.6*N^                            NIST                   5000-6000 High Temperature  
+M2   C + H2         CH2              6.89e-32 * N                                         NIST                   300                         
+M3   CH3 + CH3      C2H6             1.68e-24(T/298.0)^-7.0^ exp(-1390.0/T) * N           NIST                   300-2000                    
+M4   CH3 + O2       CH3O2            k_0_ = 1.2e-12(T/300.0)^1.1^                                                                            
+M4   CH3 + O2       CH3O2            k_infinity_ = 4.0e-31(T/300.0)^-3.6^                 JPL                    200-300   Low Temperature   
+M5   CO + CH        C2HO             4.1e-30(T/298.0)^-2.1*N^                             NIST                   53-584    Low Temperature   
+M6   CO + CH3       C2H3O            7.83e-29(T/298.0)^-7.56^ exp(-5490.0/T) * N          NIST                   300-1700                    
+M7   H + C2H2       C2H3             3.31e-30 exp(-740.0/T) * N                           NIST                   200-400   Low Temperature   
+M8   H + C2H2O      C2H3O            1.38e-30 * N                                         NIST                   1000-1700 High Temperature  
+M9   H + C2H4       C2H5             7.69e-30 exp(-380.0/T) * N                           NIST                   300-800                     
+M10  H + CHO        CH2O             3.21e-30(T/298.0)^-2.57^ exp(-215.0/T) * N           NIST                   1560-2270                   
+M11  H + CN         HCN              9.35e-30(T/298.0)^-2.0^ exp(-521.0/T) * N            NIST                   500-2500                    
+M12  H + CO         CHO              5.29e-34 exp(-370.0/T) * N                           NIST                   300-2500                    
+M13  H + H          H2               6.04e-33(T/298.0)^-1.0*N^                            NIST                   300-2500                    
+M14  H + NH2        NH3              3.0e-30 * N                                          NIST                   298                         
+M15  H + NO         HNO              k_0_ = 2.44e-10(T/298.0)^-0.41^                                                                         
+M15  H + NO         HNO              k_infinity_ = 1.34e-31(T/298.0)^-1.32^ exp(-370.5/T) NIST                   230-4200                    
+M16  H + O          OH               4.36e-32(T/298.0)^-1.0*N^                            NIST                   300-2500                    
+M17  H + O2         HO2              k_0_ = 7.5e-11(T/300.0)^0.2^                                                                            
+M17  H + O2         HO2              k_infinity_ = 4.4e-32(T/300.0)^-1.3^                 JPL                    200-300   Low Temperature   
+M18  H + OH         H2O              6.87e-31(T/298.0)^-2.0*N^                            NIST                   300-3000                    
+M19  HO2 + HO2      H2O2 + O2        1.7e-33 exp(1000.0/T) * N                            JPL                    200-300   Low Temperature   
+M20  HO2 + NO2      HNO4             k_0_ = 2.9e-12(T/300.0)^-1.1^                                                                           
+M20  HO2 + NO2      HNO4             k_infinity_ = 2.0e-31(T/300.0)^-3.4^                 JPL                    200-300   Low Temperature   
+M21  HS + O2        HSO2             9.18e-34(T/298.0)^-1.69*N^                           NIST                   200-400   Low Temperature   
+M22  N + C          CN               9.4e-33 * N                                          NIST                   298                         
+M23  N + H          NH               5.0e-32 * N                                          NIST                   298                         
+M24  N + H2         NH2              1.0e-36 * N                                          NIST                   298                         
+M25  N + N          N2               1.38e-33 exp(502.7/T) * N                            JPL                    90-6400                     
+M26  N + O          NO               5.46e-33(T/298.0)^-1.29*N^                           NIST                   196-297   Low Temperature   
+M27  NO + CH3O      CH3NO2           k_0_ = 3.8e-11(T/300.0)^-0.6^                                                                           
+M27  NO + CH3O      CH3NO2           k_infinity_ = 2.3e-29(T/300.0)^-2.8^                 JPL                    200-300   Low Temperature   
+M28  NO2 + CH3O     CH3NO3           k_0_ = 1.9e-11(T/300.0)^-1.8^                                                                           
+M28  NO2 + CH3O     CH3NO3           k_infinity_ = 5.3e-29(T/300.0)^-4.4^                 JPL                    200-300   Low Temperature   
+M29  NO2 + NO3      N2O5             k_0_ = 1.4e-12(T/300.0)^-0.7^                                                                           
+M29  NO2 + NO3      N2O5             k_infinity_ = 2.0e-30(T/300.0)^-4.4^                 JPL                    200-300   Low Temperature   
+M30  O + C          CO               2.0e-34 * N                                          NIST                   8000      High Temperature  
+M31  O + CO         CO2              1.7e-33 exp(-1509.0/T) * N                           NIST                   300-2500                    
+M32  O + NO         NO2              k_0_ = 3.0e-11                                                                                          
+M32  O + NO         NO2              k_infinity_ = 9.0e-32(T/300)^-1.5^                   JPL                    200-300   Low Temperature   
+M33  O + NO2        NO3              k_0_ = 2.2e-11(T/300.0)^-0.7^                                                                           
+M33  O + NO2        NO3              k_infinity_ = 2.5e-31(T/300.0)^-1.8^                 JPL                    200-300   Low Temperature   
+M34  O + O          O2               5.21e-35 exp(900.0/T) * N                            NIST                   200-4000                    
+M35  O + O2         O3               6.0e-34(T/300.0)^-2.4*N^                             JPL                    200-300   Low Temperature   
+M36  O(^1^D) + N2   N2O              2.8e-36(T/300.0)^-0.9*N^                             JPL                    200-300   Low Temperature   
+M37  OH + C2H2      C2H3O            k_0_ = 8.3e-13(T/300.0)^2.0^                                                                            
+M37  OH + C2H2      C2H3O            k_infinity_ = 5.5e-30                                JPL                    200-300   Low Temperature   
+M38  OH + C2H4      C2H5O            k_0_ = 7.5e-12(T/300.0)^-0.85^                                                                          
+M38  OH + C2H4      C2H5O            k_infinity_ = 1.0e-28(T/300.0)^-4.5^                 JPL                    200-300   Low Temperature   
+M39  NH2 + C2H3     C2H5N            1.8e-27(T/298.0)^-3.85*N^                                                   200-400   Low Temperature   
+M40  OH + HNO3      H2O + NO3        k_0_ = 2.4e-14 exp(460.0/T)                                                                             
+M40  OH + HNO3      H2O + NO3        k_2= 2.7e-17 exp(2199.0/T)                                                                              
+M40  OH + HNO3      H2O + NO3        k_3= 6.5e-34 exp(1355.0/T)                           JPL                    200-300   Low Temperature   
+M41  OH + NO        HNO2             k_0_ = 3.6e-11(T/300.0)^-0.1^                                                                           
+M41  OH + NO        HNO2             k_infinity_ = 7.0e-31(T/300.0)^-2.6^                 JPL                    200-300   Low Temperature   
+M42  OH + NO2       HNO3             k_0_ = 2.8e-11                                                                                          
+M42  OH + NO2       HNO3             k_infinity_ = 1.8e-30(T/300.0)^-3.0^                 JPL                    200-300   Low Temperature   
+M43  OH + OH        H2O2             k_0_ = 2.6e-11                                                                                          
+M43  OH + OH        H2O2             k_infinity_ = 6.9e-31(T/300.0)^-1.0^                 JPL                    200-300   Low Temperature   
+M44  S + S          S2               5.0e-32 exp(900.0/T) * N                             Moses et al. (2002)    100-500   Low Temperature   
+M45  SO + O         SO2              4.82e-31(T/298.0)^-2.17*N^                           NIST                   298-3000                    
+M46  SO + OH        HSO2             6.45e-29(T/298.0)^-3.48^ exp(-490.0/T) * N           NIST                   200-2000                    
+M47  SO2 + H        HSO2             5.61e-30(T/298.0)^-5.19^ exp(-2271.0/T) * N          NIST                   200-1000                    
+M48  SO2 + O        SO3              k_0_ = 4.2e-14(T/300.0)^1.8^                                                                            
+M48  SO2 + O        SO3              k_infinity_ = 1.8e-33(T/300.0)^2.0^                  JPL                    200-300   Low Temperature   
+M49  SO2 + OH       HSO3             k_0_ = 1.6e-12                                                                                          
+M49  SO2 + OH       HSO3             k_infinity_ = 3.3e-31(T/300.0)^-4.3^                 JPL                    200-300   Low Temperature   
+M50  H + SO         HSO              k_0_ = 7.5e-11                                                                                          
+M50  H + SO         HSO              k_infinity_ = 5.7e-32(T/300.0)^-1.6^                 Kasting (1990)                   Low Temperature   
+M51  S + S2         S3               1.1e-30(T/300.0)^-2.0*N^                             Moses et al. (2002)              Low Temperature   
+M52  S + S3         S4               1.1e-30(T/300.0)^-2.0*N^                             Moses et al. (2002)              Low Temperature   
+M53  S2 + S2        S4               4.0e-31 exp(900.0/T) * N                             Moses et al. (2002)              Low Temperature   
+M54  S4 + S4        S8(A)            4.0e-31 exp(900.0/T) * N                             Moses et al. (2002)              Low Temperature   
+M55  H + CH2        CH3              k_0_ = 2.37e-12 exp(523.0/T)                                                                            
+M55  H + CH2        CH3              k_infinity_ = 5.8e-30 exp(355.0/T)                   Yung and Demore (1999)           Low Temperature   
+M56  H + CH3        CH4              6.2e-29(T/298.0)^-1.8*N^                             NIST                   300-1000                    
+M57  H + C2H5       C2H6             k_0_ = 1.5e-10                                                                                          
+M57  H + C2H5       C2H6             k_infinity_ = 5.5e-23(T)^-2.0^ exp(-1040/T)          Yung and Demore (1999)           Low Temperature   
+M58  H + C3H2       C3H3             4.42e-10(T/298.0)^0.22^ exp(43.0/T)                  NIST                   200-2000                    
+M59  H + C3H3       C3H4^1^          1.9e-10(T/298.0)^0.1^ exp(16.0/T)                    NIST                   200-2000                    
+M60  H + C3H3       C3H4^2^          1.1e-10(T/298.0)^0.21^ exp(86.6/T)                   NIST                   200-2000                    
+M61  H + C3H4^1^    CH3 + C2H2       9.49e-12(T/298.0)^1.74^ exp(3872.8/T)                NIST                   200-3000                    
+M62  H + C3H4^1^    C3H5             9.61e-12 exp(-1560.0/T)                              NIST                   195-503   Low Temperature   
+M63  H + C3H4^2^    CH3 + C2H2       9.49e-12(T/298.0)^1.74^ exp(3872.8/T)                NIST                   200-3000                    
+M64  H + C3H4^2^    C3H5             1.01e-11(T/298.0)^0.69^ exp(1509.0/T)                NIST                   350-1200                    
+M65  H + C3H5       C3H6             2.64e-10(T/298.0)^0.18^ exp(62.5/T)                  NIST                   200-2000                    
+M66  H + C3H6       C3H7             7.59e-12(T/298.0)^0.51^ exp(-1318.2/T)               NIST                   298-2000                    
+M67  H + C3H7       C3H8             3.32e-11                                             NIST                   300-2000                    
+M68  H + C3H8       C3H7 + H2        4.23e-12(T/298.0)^2.54^ exp(-3400/T)                 NIST                   298-2500                    
+M69  H + C4H2       C4H3             k_0_ = 1.39e-10 exp(-1184/T)                                                                            
+M69  H + C4H2       C4H3             k_infinity_ = 1.0e-28                                Yung and Demore (1999)           Low Temperature   
+M70  H + C4H5       C4H6^1^          6.68e-11(T/298.0)^0.31^ exp(93.8/T)                  NIST                   200-2000                    
+M71  H + C6H2       C6H3             k_0_ = 1.39e-10 exp(-1184/T)                                                                            
+M71  H + C6H2       C6H3             k_infinity_ = 1.0e-28                                Yung and Demore (1999)           Low Temperature   
+M72  CH + H2        CH3              k_0_ = 2.37e-12 exp(523.0/T)                                                                            
+M72  CH + H2        CH3              k_infinity_ = 5.8e-30 exp(355.0/T)                   Yung and Demore (1999)           Low Temperature   
+M73  CH3 + C2H3     C3H6             1.2e-10                                              NIST                   298                         
+M74  CH3 + C2H5     C3H8             5.6e-11                                              NIST                   300-2000                    
+M75  CH3 + C3H3     C4H6^1^          8.3e-12                                              NIST                   1200-1500 High Temperature  
+M76  CH3 + C3H3     C4H6^2^          8.3e-12                                              NIST                   1200-1500 High Temperature  
+M77  CH3 + C3H5     C4H8             2.72e-11(T/298.0)^-0.32^ exp(66.1/T)                 NIST                   300-2500                    
+M78  CH3 + C3H6     C4H9             1.27e-14(T/298.0)^2.67^ exp(-3447.0/T)               NIST                   298-2000                    
+M79  CH3 + C3H7     C4H10            5.16e-11(T/298.0)^-0.32^                             NIST                   300-2500                    
+M80  C2H3 + C2H2    C4H5             2.09e-14(T/298.0)^1.9^ exp(-1060/T)                  NIST                   300-1500                    
+M81  C2H3 + C2H3    C4H6^3^          k_0_ = 8.2e-11                                                                                          
+M81  C2H3 + C2H3    C4H6^3^          k_infinity_ = 8.76e-6(T)^-7.03^ exp(-1390/T)         Yung and Demore (1999)           Low Temperature   
+M82  C2H3 + C2H5    C4H8             6.5e-11                                              NIST                   298                         
+M83  C2H5 + C2H5    C4H10            1.9e-11                                              NIST                   300-1200                    
+M84  NH2 + NH2      N2H4             1.96e-29(T/298.0)^-3.9*N^                            NIST                   200-400   Low Temperature   
+M85  NH2 + CH3      CH5N             1.8e-27(T/298.0)^-3.85*N^                            NIST                   200-400   Low Temperature   
+T1   O3             O2 + O           7.16e-10 exp(-11200.0/T) * N                         NIST                   300-3000                    
+T2   HO2            O2 + H           2.41e-8(T/298.0)^-1.18^ exp(-24415.0/T) * N          NIST                   200-2000                    
+T3   H2O2           OH + OH          2.01e-7 exp(-22852.0/T) * N                          NIST                   700-1500                    
+T4   N2O            N2 + O           7.07e-9 exp(-29467.0/T) * N                          NIST                   900-2000                    
+T5   NO2            NO + O           1.88e-4(T/298.0)^-3.37^ exp(-37645.0/T) * N          NIST                   1400-2500                   
+T6   NO3            NO + O2          2.5e6 exp(-6100.0/T)                                 NIST                   298-934                     
+T7   N2O5           NO2 + NO3        1.0e-3(T/298.0)^-3.5^ exp(-11000.0/T) * N            NIST                   200-400   Low Temperature   
+T8   HNO            H + NO           5.48e-7(T/298.0)^-1.24^ exp(-25312.0/T) * N          NIST                   300-2500                    
+T9   HNO2           OH + NO          1.98e-3(T/298.0)^-3.8^ exp(-25257.0/T) * N           NIST                   300-2500                    
+T10  HNO3           OH + NO2         1.15e-6 exp(-23092.0/T) * N                          NIST                   300-2000                    
+T11  HNO3           HO2 + NO         8.0e-2(T/298.0)^-6.55^ exp(-26099.0/T) * N           NIST                   295-1200                    
+T12  HNO4           O2 + HNO2        6.31e17 exp(-13110.0/T)                              NIST                   245-328   Low Temperature   
+T13  HNO4           HO2 + NO2        4.10e-5 exp(-10600.0/T) * N                          NIST                   260-300   Low Temperature   
+T14  CH2O           CO + H2          7.7e-9 exp(-33075.0/T) * N                           NIST                   1400-3200                   
+T15  CH2O2          CO2 + H2         2.49e-8 exp(-28745.0/T) * N                          NIST                   1280-2030                   
+T16  CH2O2          CO + H2O         3.47e-10 exp(-20326.0/T) * N                         NIST                   1370-2000                   
+T17  CH3O2          CH2O + OH        5.0e4                                                NIST                   249       Low Temperature   
+T18  CH3O2          CH2O2 + H        1.0e14 exp(-7500.0/T)                                NIST                   298-343   Low Temperature   
+T19  CH4O           CH3O + H         2.16e-8 exp(-33556.0/T) * N                          NIST                   1400-2500                   
+T20  CH4O           CH3 + OH         1.1e-7 exp(-33075.0/T) * N                           NIST                   1000-2000                   
+T21  CH4O           CH2O + H2        2.12e13(T/298.0)^1.22^ exp(-43539.0/T)               NIST                   300-2500                    
+T22  CH4O           CH2 + H2O        9.51e15(T/298.0)^-1.02^ exp(-46185.0/T)              NIST                   1000-3000                   
+T23  CH4O2          CH3O + OH        6.0e14 exp(-21288.0/T)                               NIST                   500-800                     
+T24  CH4O2          CH2O + H2O       4.15e13 exp(-22731.0/T)                              NIST                   300-1000                    
+T25  C2H3           C2H2 + H         0.19 (T/298.0)^-7.5^ exp(-22852.0/T) * N             NIST                   500-2500                    
+T26  C2H4           C2H2 + H2        5.8e-8 exp(-35961.0/T) * N                           NIST                   1500-3200                   
+T27  C2H5           C2H4 + H         1.69e-6 exp(-16838.0/T) * N                          NIST                   700-900                     
+T28  C2H6           C2H5 + H         8.11e17(T/298.0)^-1.23^ exp(-51356.0/T)              NIST                   200-2500                    
+T29  C2HO           CO + CH          1.08e-8 exp(-29828.0/T) * N                          NIST                   1500-2500                   
+T30  C2H2O          CO + CH2         5.98e-9 exp(-29828.0/T) * N                          NIST                   1000-2000                   
+T31  C2H3O          C2H2 + OH        2.2e12 exp(-15154.0/T)                               NIST                   627-713                     
+T32  C2H3O          CO + CH3         6.82e-3(T/298.0)^-8.62^ exp(-11300.0/T) * N          NIST                   500-2500                    
+T33  C2H4O          CHO + CH3        2.0e15 exp(-39810.0/T)                               NIST                   500-2000                    
+T34  C2H4O          C2H2O + H2       3.0e14 exp(-42216.0/T)                               NIST                   1000-1700                   
+T35  C2H4O          CH4 + CO         1.0e15 exp(-42817.0/T)                               NIST                   1000-1700                   
+T36  C2H5O          CH2O + CH3       1.33e15(T/298.0)^-2.02^ exp(-12749.0/T)              NIST                   298-2000                    
+T37  C2H5O          C2H4 + OH        6.19e11 exp(-11900.0/T)                              NIST                   544-673                     
+T38  C2H5O          C2H4O + H        1.07e14(T/298.0)^-0.69^ exp(-11187.0/T)              NIST                   298-2000                    
+T39  HCNO           CN + OH          1.66e-9 exp(-64.0/T) * N                             NIST                   1420-1750 High Temperature  
+T40  CNO            CO + N           1.69e-9 exp(-23453.0/T) * N                          NIST                   1450-2600                   
+T41  SO3            SO2 + O          9.47e-7 exp(-40051.0/T) * N                          NIST                   1273-1348                   
+T42  HSO            SO + H           1.4e-8 exp(-29467.0/T) * N                           NIST                   1100-2000                   
+T43  HSO2           SO2 + H          4.16e-7(T/298.0)^-3.29^ exp(-9610.0/T) * N           NIST                   200-2000                    
+T44  HSO2           O + HSO          4.61e-4(T/298.0)^-5.87^ exp(-15635.4/T) * N          NIST                   200-2000                    
+T45  HSO2           O2 + HS          2.73e-8(T/298.0)^-2.82^ exp(3750.0/T) * N            NIST                   200-2000                    
+T46  CHO            CO + H           6.0e-11 exp(-7721.0/T) * N                           NIST                   298-1229                    
+T47  CH3O           CH2O + H         1.69e14(T/298.0)^-0.39^ exp(-13230.0/T)              NIST                   298-2000                    
+T48  CHO2           CO + OH          7.67e-6(T/298.0)^-1.89^ exp(-17800.0/T) * N          NIST                   200-2200                    
+T49  CHO2           CO2 + H          1.25e-5(T/298.0)^-3.02^ exp(-17560.0/T) * N          NIST                   200-2200                    
+T50  CH3NO2         CH3O + NO        1.32e-6 exp(-17199.0/T) * N                          NIST                   680-955                     
+T51  CH3NO2         CH2O + HNO       3.98e13 exp(-19364.0/T)                              NIST                   440-473                     
+T52  CH3NO3         CH3O + NO2       1.0e13 exp(-16838.0/T)                               NIST                   700-1200                    
+T53  HSO3           OH + SO2         3.16e-4(T/298.0)^-4.72^ exp(-13591.0/T) * N          NIST                   150-1500                    
+T54  SO2^1^         SO2^3^           1.0e-12 * N + 1.5\times 10^3                         Turco et al. (1982)              Low Temperature   
+T55  SO2^1^         SO2              1.0e-11 * N + 2.2\times 10^4                         Turco et al. (1982)              Low Temperature   
+T56  SO2^3^         SO2              1.5e-13 * N + 1.13\times 10^3                        Turco et al. (1982)              Low Temperature   
+T57  HCN            H + CN           1.93e-4(T/298.0)^-2.44^ exp(-62782.1/T) * N          NIST                   1800-5000                   
+T58  H2S            H2 + S           3.16e-10 exp(-32954.6/T) * N                         NIST                   1890-2890                   
+T59  H2S            HS + H           2.92e-8 exp(-33315.4/T) * N                          NIST                   873-1470                    
+T60  OCS            CO + S           4.07e-10 exp(-30910.0/T) * N                         NIST                   1900-3230                   
+T61  C3H5           C3H4^1^ + H      3.98e12 exp(-18402.0/T)                              NIST                   300-2500                    
+T62  C3H5           C3H4^2^ + H      1.40e13 exp(-30188.3/T)                              NIST                   300-2500                    
+T63  C3H5           C2H2 + CH3       1.26e13 exp(-16838.0/T)                              NIST                   300-2500                    
+T64  C3H6           C2H3 + CH3       1.18e18(T/298.0)^-1.2^ exp(-49191.0/T)               NIST                   300-2500                    
+T65  C3H6           C3H5 + H         2.50e15 exp(-43659.0/T)                              NIST                   300-2500                    
+T66  C3H6           C3H4^2^ + H2     4.00e13 exp(-40291.0/T)                              NIST                   1200-1800                   
+T67  C3H7           C3H6 + H         1.09e13(T/298.0)^0.17^ exp(-17921.6/T)               NIST                   298-2000                    
+T68  C3H7           C2H4 + CH3       1.31e13(T/298.0)^0.87^ exp(-15274.6/T)               NIST                   298-1000                    
+T69  C3H8           C3H7 + H         1.58e16 exp(-49071.0/T)                              NIST                   300-2500                    
+T70  C3H8           C2H5 + CH3       1.07e12(T/298.0)^-15.74^ exp(-49672.0/T) * N         NIST                   600-1653                    
+T71  C3H8           C3H6 + H2        3.38e10                                              NIST                   3392      High Temperature  
+T72  C4H3           C4H2 + H         1.66e-8 exp(-29707.0/T) * N                          NIST                   1900-2500                   
+T73  C4H4           C4H3 + H         6.3e13 exp(-43779.0/T)                               NIST                   1170-1690                   
+T74  C4H4           C2H2 + C2H2      1.15e15 exp(-43539.0/T)                              NIST                   1700-2400                   
+T75  C4H5           C4H4 + H         1.6e14 exp(-20807.0/T)                               NIST                   900-1100                    
+T76  C4H5           C2H2 + C2H3      3.57e-8(T/298.0)^0.7^ exp(-21288.0/T) * N            NIST                   300-1500                    
+T77  C4H6^1^        C4H5 + H         7.7e14 exp(-44260.0/T)                               NIST                   1100-1600                   
+T78  C4H6^1^        C3H3 + CH3       5.0e15 exp(-38126.0/T)                               NIST                   300-2500                    
+T79  C4H6^2^        C4H5 + H         2.0e15 exp(-43178.0/T)                               NIST                   300-2500                    
+T80  C4H6^2^        C3H3 + CH3       2.0e15 exp(-37645.0/T)                               NIST                   1100-1600                   
+T81  C4H6^3^        C4H5 + H         1.58e16 exp(-55445.0/T)                              NIST                   300-2500                    
+T82  C4H6^3^        C2H3 + C2H3      1.8e13 exp(-42817.0/T)                               NIST                   1560-2210                   
+T83  C4H6^3^        C2H2 + C2H4      1.0e14 exp(-37645.0/T)                               NIST                   1100-1600                   
+T84  C4H8           CH3 + C3H5       1.0e16 exp(-36683.0/T)                               NIST                   300-2500                    
+T85  C4H9           H + C4H8         1.1e13(T/298.0)^0.25^ exp(-17921.6/T)                NIST                   298-2000                    
+T86  C4H9           CH3 + C3H6       7.7e13(T/298.0)^0.77^ exp(-15394.8/T)                NIST                   298-2000                    
+T87  C4H10          H + C4H9         1.58e16 exp(-49312.0/T)                              NIST                   300-2500                    
+T88  C4H10          CH3 + C3H7       1.0e17 exp(-42576.0/T)                               NIST                   300-2500                    
+T89  C4H10          C2H5 + C2H5      7.94e16 exp(-40411.0/T)                              NIST                   300-2500                    
+T90  C6H6           C3H3 + C3H3      6.31e14 exp(-31151.0/T)                              NIST                   300-2500                    
+T91  N2H4           NH2 + NH2        6.61e-9 exp(-20567.0/T) * N                          NIST                   1280-1580                   
+T92  CH5N           CH4 + NH         2.66e-11 exp(-24295.0/T) * N                         NIST                   1750-2450                   
+T93  CH5N           CH3 + NH2        1.36e-7 exp(-30669.0/T) * N                          NIST                   1530-1980 
+#
+#
+#Table 2 
+#Photolysis Reactions in our Photochemistry Model
+#
+#No.	Reactants	Products	Rate 295 K	Rate 200 K	Cross Sections^a	T^b	Quantum Yields	T^b	Note	
+1	O_2	O + O	3.52E-7	3.52E-7	4-108 nm: Brion et al. (1979)	N	<139 nm: 0.5	N		
+					108-129 nm: Ogawa & Ogawa (1975)	N	139-175 nm: 0	N		
+					129-173 nm: Yoshino et al. (2005) 176-203 nm: Kockarts (1976) 205-245 nm: Sander et al. (2011)	N	175-242 nm: 1.0	N		
+2	O_2	O + O^(1D)	1.40E-6	1.40E-6		N	<139 nm: 0.5	N		
+						N	139-175 nm: 1.0	N		
+						N	175-242 nm: 0	N		
+3	O_3	O_2 + O	6.33E-4	6.28E-4	110-172 nm: Mason et al. (1996)	N	<186 nm: 0.71	N		
+					186-230 nm: Sander et al. (2011)	N	186-220 nm: Sander et al. (2011)	N		
+					230-1070 nm: Bogumil et al. (2003)	Y	220-340 nm: Matsumi et al. (2002)	Y		
+							340-411 nm: 0.92	N		
+							>411 nm: 1.0	N		
+4	O_3	O_2 + O^(1D)	3.66E-3	3.63E-3			<186 nm: 0.29	N		
+							186-220 nm: Sander et al. (2011)	N		
+							220-340 nm: Matsumi et al. (2002)	Y		
+							340-411 nm: 0.08	N		
+							>411 nm: 0	N		
+5	HO_2	O + OH	2.87E-4	2.87E-4	190-260 nm: Sander et al. (2011)	N	190-260 nm: 1.0	N		
+6	H_2O	H + OH	5.78E-6	5.78E-6	6-120 nm: Chan et al. (1993)	N	6-240 nm: 1.0	N		
+					121-198 nm: Sander et al. (2011)	N				
+					199-240 nm: Extrapolation	N				
+7	H_2O_2	OH + OH	4.77E-5	4.57E-5	190-350 nm: Sander et al. (2011)	Y	190-350 nm: 1.0	N		
+8	NO_2	NO + O	4.49E-3	4.13E-3	16-200 nm: Au & Brion (1997)	N	<398 nm: 1.0	N		
+					205-235 nm: Atkinson et al. (2004)	Y	398-428 nm: Sander et al. (2011)	Y		
+					238-667 nm: Vandaele et al. (1998)	Y	>428 nm: 0	N		
+					667-910 nm: Bogumil et al. (2003)	Y				
+9	NO_3	NO + O_2	1.05E-2	1.43E-2	403-691 nm: Sander et al. (2011)	Y	403-691 nm: Sander et al. (2011)	Y		
+10	NO_3	NO_2 + O	8.32E-2	1.02E-1			403-691 nm: Sander et al. (2011)	Y		
+11	N_2O	N_2 + O^(1D)	6.94E-7	5.53E-7	130-160 nm: Nicolet & Peetermans (1972)	N	130-140 nm: 0	N		
+					160-240 nm: Sander et al. (2011)	Y	140-230 nm: 1.0	N		
+							230-240 nm: 0	N		
+12	N_2O_5	NO_3 + NO_2	8.55E-5	4.82E-5	200-410 nm: Sander et al. (2011)	Y	<248 nm: 1.0	N		
+							248-300 nm: Linear interpolation	N		
+							>300 nm: 0	N		
+13	N_2O_5	NO_3 + NO + O	1.51E-4	1.45E-4			<248 nm: 0	N		
+							248-300 nm: Linear interpolation	N		
+							>300 nm: 0.7	N		
+14	HNO_2	NO + OH	8.40E-4	8.40E-4	184-396 nm: Sander et al. (2011)	N	184-396: 1.0	N		
+15	HNO_3	NO_2 + OH	6.16E-5	5.43E-5	105-191 nm: Suto & Lee (1984)	N	<193 nm: 0.33	N		
+					192-350 nm: Sander et al. (2011)	Y	193-200 nm: Linear interpolation	N		
+							200-350 nm: 1.0	N		
+16	HNO_3	HNO_2 + O	1.94E-5	1.92E-5			<193 nm: 0.39	N		
+							193-200 nm: Linear interpolation	N		
+							200-350 nm: 0.0	N		
+17	HNO_3	HNO_2 + O^(1D)	1.40E-5	1.38E-5			<193 nm: 0.28	N		
+							193-200 nm: Linear interpolation	N		
+							200-350 nm: 0.0	N		
+18	HNO_4	NO_2 + HO_2	1.83E-4	1.83E-4	190-350 nm: Sander et al. (2011)	N	190-350 nm: Sander et al. (2011)	N		
+19	HNO_4	NO_3 + OH	4.89E-5	4.89E-5			190-350 nm: Sander et al. (2011)	N		
+20	CH_2O	CHO + H	4.16E-5	4.16E-5	226-375 nm: Sander et al. (2011)	Y	226-250 nm: 0.31	N		
+							250-375 nm: Sander et al. (2011)	N		
+21	CH_2O	H_2 + CO	3.55E-5	3.31E-5			226-250 nm: 0.49	N		
+							250-375 nm: Sander et al. (2011)	Y	P dependence omitted	
+22	C_2H_4O	CH_3 + CHO	2.59E-5	2.59E-5	202-360 nm: Sander et al. (2011)	N	<256 nm: 0.29	N		
+							256-332 nm: Sander et al. (2011)	N		
+							>332 nm: 0	N		
+23	C_2H_4O	CH_4 + CO	3.14E-6	3.14E-6			<256 nm: 0.48	N		
+							256-332 nm: Sander et al. (2011)	N		
+							>332 nm: 0	N		
+24	CH_4O_2	CH_3O + OH	2.53E-5	2.53E-5	210-405 nm: Sander et al. (2011)	N	210-405 nm: 1.0	N		
+25	CH_3NO_2	CH_3O + NO	1.58E-3	1.58E-3	190-440 nm: Sander et al. (2011)	N	190-440 nm: 1.0	N		
+26	CH_3NO_3	CH_3O + NO_2	1.40E-4	1.36E-4	190-344 nm: Sander et al. (2011)	Y	190-344 nm: 1.0	N		
+27	CH_2O_2	CHO + OH	6.20E-6	6.20E-6	195-250 nm: Sander et al. (2011)	N	195-250 nm: 0.7	N		
+28	CH_2O_2	CHO_2 + H	1.33E-6	1.33E-6			195-250 nm: 0.15	N		
+29	CH_2O_2	H_2O + CO	1.33E-6	1.33E-6			195-250 nm: 0.15	N		
+30	SO_3	SO_2 + O	2.33E-5	2.33E-5	140-180 nm: Hintze et al. (2003)	N	140-330 nm: 1.0	N		
+					180-330 nm: Sander et al. (2011)	N		N		
+31	OCS	CO + S	1.99E-5	1.69E-5	186-296 nm: Sander et al. (2011)	Y	186-296 nm: 1.0	N		
+32	CH_4	CH_3 + H	1.95E-6	1.95E-6	52-125 nm: Kameta et al. (2002) 125-142 nm: Chen & Wu (2004) 142-152 nm: Lee et al. (2001)	N	0.41 (Smith & Raulin 1999)	N		
+33	CH_4	CH^1_2 + H_2	2.52E-6	2.52E-6		N	0.53 (Smith & Raulin 1999)	N		
+34	CH_4	CH + H_2 + H	2.85E-7	2.85E-7		N	0.06 (Smith & Raulin 1999)	N		
+35	CO	C + O	3.94E-7	3.94E-7	6-177 nm: Chan et al. (1993)	N	<111 nm: 1.0	N		
+							>111 nm: 0	N		
+36	CO_2	CO + O	5.65E-9	3.71E-9	35-197 nm: Huestis & Berkowitz (2010)	Y	<167 nm: 0	N		
+					197-270 nm: Ityakov et al. (2008)	N	167-205 nm: 1.0	N		
+					Note:108-118 nm: Stark et al. (2007, 195K) 118-163 nm: Yoshino et al. (1996, 195K) 163-193 nm: Parkinson et al. (2003, 195K)		>205 nm: 0	N		
+37	CO_2	CO + O^(1D)	5.57E-7	5.48E-7			<167 nm: 1.0	N		
+							167-205 nm: 0	N		
+							>205 nm: 0	N		
+38	H_2	H + H	1.68E-8	1.68E-8	18-70 nm: Lee et al. (1976)	N	<80 nm: 0.1 (Mentall & Gentieu 1970)	N		
+					70-87 nm: Cook & Metzger (1964)	N	80-85 nm: 1.0	N		
+					87-124 nm: Backx et al. (1976)	N	>85 nm: 0	N		
+39	N_2	N + N	5.61E-7	5.61E-7	6-108 nm: Chan et al. (1993)	N	6-108 nm: 1.0	N		
+40	CH_4O	CH_3O + H	5.97E-6	5.97E-6	16-106 nm: Burton et al. (1992)	N	16-220 nm: 1.0	N		
+					106-165 nm: Nee et al. (1985)					
+					165-220 nm: Cheng et al. (2002)					
+41	HCN	H + CN	3.16E-7	3.16E-7	133-145 nm: Macpherson & Simons (1978)	N	133-145 nm: 1.0		Incomplete wavelength coverage	
+42	NH_3	NH_2 + H	6.89E-5	6.89E-5	8-106 nm: Samson et al. (1987)	N	<106 nm: 0.3 (Lilly et al. 1973)	N		
+					106-140 nm: Wu et al. (2007)	N	106-165 nm: Linear interpolation	N		
+					140-230 nm: Cheng et al. (2006)	N	>165 nm: 1.0	N		
+43	NH_3	NH + H_2	1.55E-6	1.55E-6			<106 nm: 0.7	N		
+							106-165 nm: Linear interpolation	N		
+							>165 nm: 0	N		
+44	NO	N + O	4.69E-6	4.69E-6	7-177 nm: Lida et al. (1986)	N	<191 nm: 1.0	N		
+					186-227 nm: Thompson et al. (1963)		>191 nm: 0			
+45	H_2S	HS + H	1.48E-4	1.52E-4	5-160 nm: Feng et al. (1999a)	N	5-260 nm: 1.0	N		
+					160-260 nm: Wu & Chen (1998)	Y				
+46	SO_2	SO + O	1.06E-4	8.61E-5	5-106 nm: Feng et al. (1999b)	N	<220 nm: 1.0	N		
+					106-171 nm: Manatt & Lane (1993)	N	220-340 nm: 0	N		
+					171-239 nm: Wu et al. (2000)	Y	>340 nm: 0	N		
+					239-395 nm: Bogumil et al. (2003)					
+47	SO_2	SO^1_2	8.26E-4	8.17E-4		Y	<220 nm: 0	N		
+							220-340 nm: 1.0	N		
+							>340 nm: 0	N		
+48	SO_2	SO^3_2	7.51E-7	1.66E-6			<340 nm: 0	N		
+							>340 nm:1.0	N		
+49	HSO	HS + O	2.87E-4	2.87E-4	190-260 nm: Sander et al. (2011)	N	190-260 nm: 1.0	N	Assumed as HO_2	
+50	H_2SO_4	SO_3 + H_2O	1.41E-5	1.41E-5	118-180 nm: Mills et al. (2005)	N	118-180 nm: 1.0	N		
+					510-735 nm: Lane & Kjaergaard (2008)	N	510-735 nm: 1.0	N		
+51	SO	S + O	3.70E-4	3.70E-4	100-190 nm: Linear interpolation	N	100-235 nm: 1.0	N		
+					190-235 nm: Phillips (1981)	N				
+52	S_2	S + S	4.00E-3	4.00E-3	Photolysis around 280 nm, value estimated by De Almeida & Singh (1986).					
+53	S_3	S_2 + S	5.76E-1	5.76E-1	350-475 nm: Billmers & Smith (1991)	N	350-475 nm: 1.0	N		
+54	S_4	S_2 + S_2	1.10E-1	1.10E-1	425-575 nm: Billmers & Smith (1991)	N	425-575 nm: 1.0	N		
+55	C_2H_2	C_2H + H	5.86E-6	5.42E-6	6-137 nm: Cooper et al. (1995)	N	6-217 nm: 1.0 (Lauter et al. 2002)	N		
+					137-185 nm: Smith et al. (1991)	Y	>217 nm: 0			
+					185-236 nm: Benilan et al. (2000)	Y				
+56	C_2H_3	C_2H_2 + H	6.25E-3	6.25E-3	225-238 nm: Fahr et al. (1999)	N	225-446 nm: 1.0	N	Incomplete Wavelength Coverage	
+					400-446 nm: Hunziker et al. (1983)	N				
+57	C_2H_4	C_2H_2 + H_2	6.52E-6	6.52E-6	50-105 nm: Holland et al. (1997)	N	50-209 nm: 0.4	N		
+					105-175 nm: Lu et al. (2004)					
+					175-209 nm: Orkin et al. (1997)					
+58	C_2H_4	C_2H_2 + 2H	8.15E-6	8.15E-6		N	50-209 nm: 0.5	N		
+59	C_2H_4	C_2H_3 + H	1.63E-6	1.63E-6		N	50-209 nm: 0.1	N		
+60	C_2H_5	CH_3 + CH^1_2	4.24E-4	4.24E-4	200-260 nm: Fagerstrom et al. (1993)	N	200-260 nm: 1.0	N		
+61	C_2H_6	C_2H_4 + H_2	8.84E-7	8.84E-7	13-120 nm: Kameta et al. (1996)	N	13-160 nm: 0.14 (Akimoto et al. 1965)	N		
+					120-150 nm: Chen & Wu (2004)	N				
+					150-160 nm: Lee et al. (2001)	N				
+62	C_2H_6	C_2H_4 + 2H	1.96E-6	1.96E-6			13-160 nm: 0.31	N		
+63	C_2H_6	C_2H_2 + 2H_2	1.71E-6	1.71E-6			13-160 nm: 0.27	N		
+64	C_2H_6	CH_4 + CH^1_2	1.39E-6	1.39E-6			13-160 nm: 0.22	N		
+65	C_2H_6	CH_3 + CH_3	3.79E-7	3.79E-7			13-160 nm: 0.06	N		
+66	N_2H_2	N_2 + H_2	1.13E-4	1.13E-4	191-291 nm: Vaghjiani (1993)	N	191-291 nm: 1.0	N	Assumed as N_2H_4	
+67	N_2H_4	N_2H_3 + H	1.13E-4	1.13E-4	191-291 nm: Vaghjiani (1993)	N	191-291 nm: 1.0	N		
+68	CH_5N	HCN + 2H_2	1.21E-5	1.21E-5	5-83 nm: Burton et al. (1994)	N	5-247 nm: 0.08	N		
+					83-247 nm: Hubin-Franskin et al. (2002)	N				
+69	C_2H_5N	HCN + CH_3 + H	2.67E-5	2.67E-5	111-213 nm: Basch et al. (1969)	N	111-213 nm: 0.1	N		
+70	HNO	NO + H	8.40E-4	8.40E-4	184-396 nm: Sander et al. (2011)	N	184-396: 1.0	N	Assumed as HNO_2
+#	
+#Notes. The rates (s^-1) are computed with the unattenuated solar spectrum at 1 AU with cross sections and quantum yields at 295 K and 200 K, and divided by 2 for diurnal average.
+#a The source of data for cross sections is listed for each molecule in the row of its first photolysis reaction. 
+# The photolysis reaction rates for other branches are computed using the same cross sections but different quantum yields.
+#b Temperature dependence of cross sections and quantum yields: Y indicates temperature dependence is taken into account for the respective wavelength range.
+
+
+
+        

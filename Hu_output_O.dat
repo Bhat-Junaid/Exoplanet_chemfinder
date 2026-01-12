@@ -1,0 +1,23 @@
+R444 O + O3         O2 + O2          8.0e-12 exp(-2060.0/T)                               JPL                    200-300   Low Temperature   
+R464 O(^1^D) + O2   O + O2           3.3e-11 exp(55.0/T)                                  JPL                    200-300   Low Temperature   
+R465 O(^1^D) + O3   O2 + O2          1.2e-10                                              JPL                    200-300   Low Temperature   
+R466 O(^1^D) + O3   O2 + O + O       1.2e-10                                              JPL                    200-300   Low Temperature   
+M34  O + O          O2               5.21e-35 exp(900.0/T) * N                            NIST                   200-4000                    
+M35  O + O2         O3               6.0e-34(T/300.0)^-2.4*N^                             JPL                    200-300   Low Temperature   
+T1   O3             O2 + O           7.16e-10 exp(-11200.0/T) * N                         NIST                   300-3000                    
+1	O_2	O + O	3.52E-7	3.52E-7	4-108 nm: Brion et al. (1979)	N	<139 nm: 0.5	N		
+					108-129 nm: Ogawa & Ogawa (1975)	N	139-175 nm: 0	N		
+					129-173 nm: Yoshino et al. (2005) 176-203 nm: Kockarts (1976) 205-245 nm: Sander et al. (2011)	N	175-242 nm: 1.0	N		
+2	O_2	O + O^(1D)	1.40E-6	1.40E-6		N	<139 nm: 0.5	N		
+						N	139-175 nm: 1.0	N		
+						N	175-242 nm: 0	N		
+3	O_3	O_2 + O	6.33E-4	6.28E-4	110-172 nm: Mason et al. (1996)	N	<186 nm: 0.71	N		
+					186-230 nm: Sander et al. (2011)	N	186-220 nm: Sander et al. (2011)	N		
+					230-1070 nm: Bogumil et al. (2003)	Y	220-340 nm: Matsumi et al. (2002)	Y		
+							340-411 nm: 0.92	N		
+							>411 nm: 1.0	N		
+4	O_3	O_2 + O^(1D)	3.66E-3	3.63E-3			<186 nm: 0.29	N		
+							186-220 nm: Sander et al. (2011)	N		
+							220-340 nm: Matsumi et al. (2002)	Y		
+							340-411 nm: 0.08	N		
+							>411 nm: 0	N		
