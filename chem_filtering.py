@@ -55,7 +55,7 @@ NETWORK                                             FUNCTION
 
 elements= {"O", "H", "He"}
 
-elements_v= {"O", "H", "He", "C", "N"}
+elements_v= { "H"}
 
 
 pb.vulcan(
@@ -87,4 +87,4 @@ pb.velliet_venot(
 
 pb.agundez(
     path = "/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/Input_Agundez2025.dat",
-    allowed_elements = elements, metadata = 'N')
+    allowed_elements = elements, metadata = 'Y')
