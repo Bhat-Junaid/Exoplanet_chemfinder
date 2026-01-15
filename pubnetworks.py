@@ -1,6 +1,6 @@
 import re
 import os
-from collections import Counter
+from collections import Counter, OrderedDict
 from pathlib import Path
 
 # ============================ VULCAN NETWORK ==============================================
@@ -639,7 +639,7 @@ def velliet_venot(path, allowed_elements, metadata="N"):
     # -------------------------------------------------
 
     tag = "_".join(sorted(allowed_upper))
-    out_file = os.path.join(os.path.dirname(path), f"velliet_venot_output_{tag}.dat")
+    out_file = os.path.join(os.path.dirname(path), f"velliet_output_{tag}.dat")
 
     kept = []
 
@@ -862,6 +862,29 @@ def agundez(path, allowed_elements, metadata="N"):
 This code is used to identify the unique (many reactions are repeated in different networks) 
 reactions in the output files generated using above functions. 
 USED IN: chem_sorting.py
+
+
+THIS PART IS BROKEN DOWN INTO TWO SUB-PARTS:
+
+A) CHEMICAL REACTION FILE REPROCESSING: To a homogenous nomeclature of the 
+reaction networks. Standardization of all different reaction writing proc-
+dures used by different authors.
+
+INPUT: The CHEMICAL NETWORK FILES produced in PART I (without metadata!!!).
+OUTPUT: Files with name "reprocess_{input_file_name}.dat".
+These files contain the reactions in a one standardized uniform format.
+
+IMP :: GENERAL CHARACTERISTICS OF THE FILES PRODUCED
+- HV = Used to denote light (h\nu) across all the files.
+- BRACKETS () = Used to write the excited states. 
+                e.g: O(3P), O(1S), O(X2Pig), CH2(*) etc
+- ^+ or ^- or ^-- = In general the caret ^ is used to denote ions in the file.
+
+- FOR STAND network file processing only; OXYRANE (in input file) = C2H4O (its
+chemical formula) in the output file
+
+- For VELLIET_VENOT; O3P(in input file) is written as O(in output file). 
+
 """
 
 
@@ -889,7 +912,7 @@ def reprocess_velliet_file(path):
             for p in parts:
                 if p.isspace():
                     n = len(p)
-                    if n>=3 and n <= 11:
+                    if n >= 3 and n <= 11:
                         new.append(" + ")
                     elif n >= 30:
                         new.append(" = ")
@@ -899,6 +922,9 @@ def reprocess_velliet_file(path):
                     new.append(p.strip())
 
             reaction = "".join(new)
+
+            # NEW: Replace O3P token with O
+            reaction = re.sub(r"\bO3P\b", "O", reaction)
 
             # clean up accidental doubles
             reaction = re.sub(r"\s+\+\s+\+", " + ", reaction)
@@ -912,7 +938,6 @@ def reprocess_velliet_file(path):
             f.write(r + "\n")
     print(f"Done reprocessing {path}\n")
     return out_path
-
 
 def reprocess_agundez_file(input_path):
     """
@@ -1290,5 +1315,270 @@ def reprocess_stand_file(input_path):
             fout.write(s + "\n")
     print(f"Done reprocessing {input_path}\n")
     return str(out_path)
+
+
+
+#================================= UNIQUE REACTION PRODUCTION =========================================
+
+def build_unique_reactions(reprocess_paths, long_table="N"):
+    """
+    Build unique-reaction tables across 6 *reprocessed* network files.
+
+    Inputs
+    ------
+    reprocess_paths : list[str] | tuple[str]
+        Paths to the 6 reprocessed .dat files (Hu, Agundez, Velliet, Moses, VULCAN, Stand),
+        in ANY order. The function derives each network name from the filename:
+            reprocess_<NETWORK>_output_<ELEMENTS>.dat
+        and derives the <ELEMENTS> tag from between 'output_' and '.dat'.
+    long_table : str
+        "Y" to also write the long-table file, otherwise "N".
+
+    Outputs
+    -------
+    1) Uniq_reactions_<ELEMENTS>.dat
+        One reaction per row (unique across all inputs).
+    2) Uniq_reactions_metadata_<ELEMENTS>.dat
+        First column (70 chars) is the reaction text.
+        Then 6 columns (10 chars each) giving the line number (0001 format) in each network,
+        or 0000 if absent.
+    3) (optional) Uniq_reactions_longtable_<ELEMENTS>.dat
+        6 columns (one per network). Each row shows the reaction as written in that network.
+        Blank if absent.
+
+    Canonicalization rules for matching
+    ----------------------------------
+    - Reaction separator is ' = ' (space-equals-space).
+    - Species separator is ' + ' (space-plus-space).
+      This avoids splitting ion charges like '^+' or '++' since those are not space-bounded.
+    - Ignore standalone photon token: exactly 'HV' as a token (i.e., bounded by spaces via split).
+    - Ignore only the literal parentheses characters '(' and ')', but keep their contents:
+        O(1D) -> O1D   (for matching only)
+    - Order within each side does not matter:
+        A + BC = AB + C matches BC + A = C + AB
+    - Direction is preserved (lhs != rhs). If you want to treat reverse as identical, say so.
+
+    Notes
+    -----
+    - Assumes each input line is already "reprocessed" and reaction-like.
+    - The first occurrence per file is used for metadata (line number) and long-table text.
+    """
+
+
+    if not isinstance(reprocess_paths, (list, tuple)) or len(reprocess_paths) != 6:
+        raise ValueError("reprocess_paths must be a list/tuple of exactly 6 file paths.")
+
+    long_table = (long_table or "N").strip().upper()
+    if long_table not in {"Y", "N"}:
+        long_table = "N"
+
+    # -------------------------
+    # helpers: name + tag
+    # -------------------------
+    def network_name_from_path(p):
+        base = os.path.basename(p)
+        m = re.search(r"^reprocess_(.+?)_output_", base)
+        if not m:
+            # fallback: try without reprocess_ prefix
+            m = re.search(r"^(.+?)_output_", base)
+        return m.group(1) if m else os.path.splitext(base)[0]
+
+    def tag_from_any_path(p):
+        base = os.path.basename(p)
+        m = re.search(r"output_(.+?)\.dat$", base)
+        return m.group(1) if m else "UNKNOWN"
+
+    tag = None
+    for p in reprocess_paths:
+        t = tag_from_any_path(p)
+        if t != "UNKNOWN":
+            tag = t
+            break
+    if tag is None:
+        tag = "UNKNOWN"
+
+    # -------------------------
+    # parsing / canonicalization
+    # -------------------------
+    SEP_RXN = " = "
+    SEP_SPECIES = " + "
+
+
+    def strip_paren_chars(species):
+    # keep contents, drop only parentheses characters
+        return species.replace("(", "").replace(")", "")
+
+    def normalize_species_for_matching(sp):
+        """
+        Matching-only normalization:
+        - remove parentheses characters '(' and ')'
+        - if the resulting token is ONLY uppercase letters (A–Z), sort letters
+        so OH == HO, ABC == CBA
+        - otherwise leave unchanged (digits, charges, excited-state text, etc.)
+        """
+        sp2 = strip_paren_chars(sp)
+
+        # Only reorder if token is exactly [A-Z]+
+        if re.fullmatch(r"[A-Z]+", sp2):
+            sp2 = "".join(sorted(sp2))
+
+        return sp2
+
+
+    def canonicalize_side(side_text):
+        # split by ' + ' exactly; do NOT split on '+' used as charge
+        parts = [p.strip() for p in side_text.split(SEP_SPECIES)]
+        out = []
+        for sp in parts:
+            if not sp:
+                continue
+            # ignore photon only if it's the standalone token HV
+            if sp == "HV":
+                continue
+            sp2 = normalize_species_for_matching(sp)
+            out.append(sp2)
+        return tuple(sorted(out))
+
+    def canonical_key(reaction_line):
+        # returns (lhs_tuple_sorted, rhs_tuple_sorted) or None
+        if SEP_RXN not in reaction_line:
+            return None
+        lhs, rhs = reaction_line.split(SEP_RXN, 1)
+        lhs_t = canonicalize_side(lhs.strip())
+        rhs_t = canonicalize_side(rhs.strip())
+        # If everything was stripped (e.g., only HV), ignore
+        if not lhs_t and not rhs_t:
+            return None
+        return (lhs_t, rhs_t)
+
+    # -------------------------
+    # ingest
+    # -------------------------
+    net_order = [network_name_from_path(p) for p in reprocess_paths]
+
+    # stable order (to keep outputs deterministic):
+    # If the "usual" names exist, use that order, otherwise use discovered order.
+    preferred = ["Hu", "Agundez", "velliet_venot", "Velliet", "Moses", "VULCAN", "stand", "Stand"]
+    def rank(n):
+        return preferred.index(n) if n in preferred else 10_000 + net_order.index(n)
+    net_order = sorted(net_order, key=rank)
+
+    # map network name -> path
+    net_path = {network_name_from_path(p): p for p in reprocess_paths}
+
+    # database:
+    # key -> {
+    #   "repr": first_seen_reaction_string,
+    #   "line": {net: line_number_int or 0},
+    #   "text": {net: reaction_string or ""}
+    # }
+    db = OrderedDict()
+
+    for net in net_order:
+        path = net_path[net]
+        with open(path, "r") as f:
+            for ln, raw in enumerate(f, 1):
+                line = raw.rstrip("\n").strip()
+                if not line:
+                    continue
+                # enforce consistent separator expectation
+                if SEP_RXN not in line:
+                    continue
+
+                key = canonical_key(line)
+                if key is None:
+                    continue
+
+                if key not in db:
+                    db[key] = {
+                        "repr": line,  # keep original formatting from first occurrence globally
+                        "line": {n: 0 for n in net_order},
+                        "text": {n: "" for n in net_order},
+                    }
+
+                # first occurrence per network
+                if db[key]["line"][net] == 0:
+                    db[key]["line"][net] = ln
+                    db[key]["text"][net] = line
+
+    # -------------------------
+    # write outputs
+    # -------------------------
+    out1 = f"Uniq_reactions_{tag}.dat"
+    out2 = f"Uniq_reactions_metadata_{tag}.dat"
+    out3 = f"Uniq_reactions_longtable_{tag}.dat"
+
+    # --- file 1: unique reactions list
+    with open(out1, "w") as f1:
+        for entry in db.values():
+            f1.write(entry["repr"] + "\n")
+
+    # --- file 2: metadata (fixed widths)
+    RXN_W = 70
+    COL_W = 10
+
+    def fmt_rxn(s):
+        s = (s or "").strip()
+        return (s[:RXN_W]).ljust(RXN_W)
+
+    def fmt_ln(n):
+        try:
+            n = int(n)
+        except Exception:
+            n = 0
+        if n < 0:
+            n = 0
+        if n > 9999:
+            n = 9999
+        return f"{n:04d}".ljust(COL_W)
+
+    header = [("Reaction".ljust(RXN_W))] + [net.ljust(COL_W) for net in net_order]
+
+    with open(out2, "w") as f2:
+        f2.write("\t".join(header) + "\n")
+        for entry in db.values():
+            row = [fmt_rxn(entry["repr"])]
+            row.extend(fmt_ln(entry["line"][net]) for net in net_order)
+            f2.write("\t".join(row) + "\n")
+
+   
+    # --- file 3: optional long table (FIXED 50-COLUMN WIDTH + COLUMN TOTALS)
+    if long_table == "Y":
+        COL_W_LONG = 50
+
+        def fmt_long(s):
+            s = (s or "").strip()
+            return s[:COL_W_LONG].ljust(COL_W_LONG)
+
+        # initialize counters
+        counts = {net: 0 for net in net_order}
+
+        with open(out3, "w") as f3:
+            # header
+            f3.write("".join(fmt_long(net) for net in net_order) + "\n")
+
+            # rows
+            for entry in db.values():
+                row_parts = []
+                for net in net_order:
+                    txt = entry["text"][net]
+                    if txt:
+                        counts[net] += 1
+                    row_parts.append(fmt_long(txt))
+                f3.write("".join(row_parts) + "\n")
+
+            # final totals row
+            f3.write("".join(fmt_long(str(counts[net])) for net in net_order) + "\n")
+
+
+    return {
+        "tag": tag,
+        "networks": net_order,
+        "out_unique": out1,
+        "out_metadata": out2,
+        "out_longtable": out3 if long_table == "Y" else None,
+        "n_unique": len(db),
+    }
+
 
 

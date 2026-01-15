@@ -45,7 +45,8 @@ NETWORK                                             FUNCTION
     2. hu                  (Hu R., Seager S.+ 2012)
     3. moses               (Moses+ 2011)
     4. stand               (Rimmer P.B+ 2020)
-    5. velliet_venot       (Veillet+  2025)
+    5. velliet_venot       (Veillet+  2024)
+    6. agundez             (Agudez 2025)
     =================================================
 
 

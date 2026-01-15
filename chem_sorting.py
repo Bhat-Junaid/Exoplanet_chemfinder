@@ -1,5 +1,7 @@
 import pubnetworks as pb
-
+import os
+import re
+from collections import OrderedDict
 
 elements= {"H", "He", "O"}
 
@@ -41,6 +43,8 @@ pb.agundez(
 """
 THIS PART IS BROKEN DOWN INTO TWO SUB-PARTS:
 
+###################################### PART II.A #############################
+
 A) CHEMICAL REACTION FILE REPROCESSING: To a homogenous nomeclature of the 
 reaction networks. Standardization of all different reaction writing proc-
 dures used by different authors.
@@ -49,17 +53,11 @@ INPUT: The CHEMICAL NETWORK FILES produced in PART I (without metadata!!!).
 OUTPUT: Files with name "reprocess_{input_file_name}.dat".
 These files contain the reactions in a one standardized uniform format.
 
-IMP :: GENERAL CHARACTERISTICS OF THE FILES PRODUCED
-- HV = Used to denote light (h\nu) across all the files.
-- BRACKETS () = Used to write the excited states. 
-                e.g: O(3P), O(1S), O(X2Pig), CH2(*) etc
-- ^+ or ^- or ^-- = In general the caret ^ is used to denote ions in the file.
-
-- FOR STAND network file processing only; OXYRANE (in input file) = C2H4O (its
-chemical formula) in the output file
 """
 
-pb.reprocess_velliet_file("/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/velliet_venot_output_H_HE_O.dat")
+
+
+pb.reprocess_velliet_file("/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/velliet_output_H_HE_O.dat")
 pb.reprocess_agundez_file("/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/Agundez_output_H_HE_O.dat")
 pb.reprocess_hu_file("/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/Hu_output_H_He_O.dat")
 pb.reprocess_vulcan_file("/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/VULCAN_output_H_He_O.dat")
@@ -67,3 +65,50 @@ pb.reprocess_moses_file("/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/MOSES_outpu
 pb.reprocess_stand_file("/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/stand_output_H_He_O.dat")
 
 
+
+
+
+
+"""
+###################################### PART II.B #############################
+
+B) UNIQUE CHEMICAL REACTION PRODUCTION: Produces all the reactions that occur 
+at least once in the six networks (in chosen element network e.g H-He-O).
+
+INPUT: The CHEMICAL NETWORK FILES produced in PART II.A (reprocessed).
+OUTPUT: 3 files: 
+i) Uniq_reactions_E1_E2_E3_E4.dat :: contains all the unique reactions as 1 col
+                                     format dat file.
+
+ii) Uniq_reactions_metadata_E1_E2_E3_E4.dat 
+                                  :: contains all the unique reactions in the 1
+                                  st col and then in subsquent cols the line no.
+                                  in which the reaction was found in the input 
+                                  reprocessed line [Good for sanity checks and 
+                                  cross linking.]
+
+iii) Uniq_reactions_longtable_E1_E2_E3_E4.dat 
+                                  :: contains 6 columns with header correspondi-
+                                  ng to each network (Hu, Agundez, VULCAN, STAND
+                                  ,Velliet_Venot, Moses) and under them the reac-
+                                  tions present in the respective networks.
+                                  All the similar/repeated reactions like in the 
+                                  same row, just under diff columns.               
+                                     
+
+"""
+
+
+
+path_vv = "/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/reprocess_velliet_output_H_HE_O.dat"
+path_agundez= "/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/reprocess_Agundez_output_H_HE_O.dat"
+path_hu = "/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/reprocess_Hu_output_H_He_O.dat"
+path_vulcan = "/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/reprocess_VULCAN_output_H_He_O.dat"
+path_moses = "/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/reprocess_MOSES_output_H_He_O.dat"
+path_stand = "/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/reprocess_stand_output_H_HE_O.dat"
+
+reprocessed_file_paths = [path_vv, path_agundez, path_hu, path_vulcan, path_moses, path_stand]
+
+
+
+pb.build_unique_reactions(reprocessed_file_paths, long_table="Y")
