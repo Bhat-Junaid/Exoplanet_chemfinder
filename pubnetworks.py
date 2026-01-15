@@ -1,7 +1,7 @@
 import re
 import os
 from collections import Counter
-
+from pathlib import Path
 
 # ============================ VULCAN NETWORK ==============================================
 
@@ -233,7 +233,7 @@ def hu(path, allowed_elements, metadata="N"):
 
 #=================================== MOSES NETWORK ==========================================
 
-def moses(path, allowed_elements, metadata="N"):
+def moses(path, allowed_elements, metadata="N", info = "N"):
     """
     Master function for Moses chemical network.
     path: folder containing ReadMe and TableS2 .txt files
@@ -276,7 +276,7 @@ def moses(path, allowed_elements, metadata="N"):
         # Remove parenthesis with digits for CH2
         species = re.sub(r'\(\d+\)', '', species)
         # Remove O(1D) style
-        species = re.sub(r'O\(\d+D\)', 'O', species)
+        species = re.sub(r'O\(\d+D\)', '', species)
         
         return species.strip()
 
@@ -315,10 +315,10 @@ def moses(path, allowed_elements, metadata="N"):
         kept.append("\n\n\n\n")
 
     # Add fixed comments
-    
-    kept.append("## IMPORTANT INFORMATION (added by Junaid)")
-    kept.append("# For rate coefficients please check TableS1.pdf")
-    kept.append("# R1-137 are photolysis reactions")
+    if info == 'Y':
+        kept.append("## IMPORTANT INFORMATION (added by Junaid)")
+        kept.append("# For rate coefficients please check TableS1.pdf")
+        kept.append("# R1-137 are photolysis reactions")
 
     # ---------------- Read TableS2 Text File ----------------
     txt_files = [f for f in os.listdir(path) if f.endswith(".txt")]
@@ -340,11 +340,12 @@ def moses(path, allowed_elements, metadata="N"):
         for lineno, line in enumerate(f, 1):
             raw = line.rstrip("\n")
             
-            # First 45 characters as header
-            if lineno == 1:
-                kept.append("\n\n\n")
-                kept.append(raw[:29])
-                continue
+            # First 29 characters as header
+            if info == 'Y':
+                if lineno == 1:
+                    kept.append("\n\n\n")
+                    kept.append(raw[:29])
+                    continue
 
 
             # Stop condition
@@ -353,7 +354,8 @@ def moses(path, allowed_elements, metadata="N"):
 
             # Skip until "REACTIONS:" is found
             if not reactions_started:
-                kept.append(raw)
+                if info == 'Y':
+                    kept.append(raw)
                 if "REACTIONS:" in raw:
                     reactions_started = True
                 continue
@@ -847,3 +849,446 @@ def agundez(path, allowed_elements, metadata="N"):
             out.write(line + "\n")
 
     print(f"Filtered reactions written to {out_file}")
+
+
+#######################################################################################################
+#######################################################################################################
+#######################################################################################################
+
+#================================= FILE REPROCESSING ==================================================
+
+
+"""
+This code is used to identify the unique (many reactions are repeated in different networks) 
+reactions in the output files generated using above functions. 
+USED IN: chem_sorting.py
+"""
+
+
+
+def reprocess_velliet_file(path):
+    path = Path(path)
+    out_path = path.with_name("reprocess_" + path.name)
+
+    processed = []
+
+    with open(path) as f:
+        for line in f:
+            if not line.strip():
+                continue
+
+            if line[0].islower() or line.startswith("-"):
+                continue
+
+            line = line[:110].rstrip()
+
+            # split into text and space blocks
+            parts = re.split(r"(\s+)", line)
+
+            new = []
+            for p in parts:
+                if p.isspace():
+                    n = len(p)
+                    if n>=3 and n <= 11:
+                        new.append(" + ")
+                    elif n >= 30:
+                        new.append(" = ")
+                    else:
+                        new.append(" ")
+                else:
+                    new.append(p.strip())
+
+            reaction = "".join(new)
+
+            # clean up accidental doubles
+            reaction = re.sub(r"\s+\+\s+\+", " + ", reaction)
+            reaction = re.sub(r"\s+=\s+=", " = ", reaction)
+            reaction = re.sub(r"\s+", " ", reaction)
+
+            processed.append(reaction.strip())
+
+    with open(out_path, "w") as f:
+        for r in processed:
+            f.write(r + "\n")
+    print(f"Done reprocessing {path}\n")
+    return out_path
+
+
+def reprocess_agundez_file(input_path):
+    """
+    Reprocess an Agundez_output_*.dat file:
+      - keep only first 50 characters of each line
+      - convert tokens like A_BC -> A(BC), where BC goes until next whitespace
+      - output is exactly 50 characters wide per line (padded or trimmed)
+      - writes to reprocess_<original_name>.dat
+    """
+    input_path = Path(input_path)
+    if input_path.suffix.lower() != ".dat":
+        raise ValueError("Expected a .dat input file")
+
+    out_path = input_path.with_name("reprocess_" + input_path.name)
+
+    # Match a "word" chunk containing underscore, stopping at whitespace.
+    # Example matches: A_BC, A_3X, O_1D, CH3_foo
+    pattern = re.compile(r"([^\s_]+)_([^\s]+)")
+
+    with open(input_path, "r") as fin, open(out_path, "w") as fout:
+        for line in fin:
+            # Take only the first 50 columns from the original line
+            chunk = line[:50].rstrip("\n")
+
+            # Replace underscore form within that 50-col chunk
+            def repl(m):
+                left = m.group(1)
+                right = m.group(2)
+                return f"{left}({right})"
+
+            chunk = pattern.sub(repl, chunk)
+
+            # Enforce exact width 50 after replacement
+            if len(chunk) < 50:
+                chunk = chunk.ljust(50)
+            else:
+                chunk = chunk[:50]
+
+            fout.write(chunk + "\n")
+    print(f"Done reprocessing {input_path}\n")
+    return str(out_path)
+
+
+def reprocess_hu_file(input_path):
+
+    input_path = Path(input_path)
+    if input_path.suffix.lower() != ".dat":
+        raise ValueError("Expected a .dat input file")
+
+    out_path = input_path.with_name("reprocess_" + input_path.name)
+
+    first_gap_re = re.compile(r"\s{2,}")
+
+    def normalize_caret_notation_in_line(line: str) -> str:
+        tokens = line.split()
+        out = []
+
+        for tok in tokens:
+            if "^" not in tok:
+                out.append(tok)
+                continue
+
+            # Base is everything before the first caret, but Hu often has '(' there: O(^1^D)
+            base = tok.split("^", 1)[0].rstrip("(").rstrip(")")
+
+            # Pull alphanumerics after carets: ^1 ^D -> ["1","D"] -> "1D"
+            exc = re.findall(r"\^([A-Za-z0-9]+)", tok)
+
+            if exc:
+                out.append(f"{base}({''.join(exc)})")
+            else:
+                # fallback: remove carets and clean stray parentheses
+                out.append(tok.replace("^", "").replace("((", "(").replace("))", ")"))
+
+        return " ".join(out)
+
+    with open(input_path, "r") as fin, open(out_path, "w") as fout:
+        for line in fin:
+            if not line.startswith(("R", "M", "T")):
+                continue
+
+            starts_with_M = line.startswith("M")
+
+            chunk = line[4:37].rstrip("\n")
+
+            m = first_gap_re.search(chunk)
+            if not m:
+                continue
+
+            lhs = chunk[:m.start()].rstrip()
+            rhs = chunk[m.end():].lstrip()
+
+            if starts_with_M:
+                lhs = lhs.strip()
+                rhs = rhs.strip()
+                if lhs:
+                    lhs += " + M"
+                if rhs:
+                    rhs += " + M"
+
+            out_line = f"{lhs} = {rhs}".strip()
+            out_line = normalize_caret_notation_in_line(out_line)
+
+            fout.write(out_line + "\n")
+    print(f"Done reprocessing {input_path}\n")
+    return str(out_path)
+
+
+def reprocess_vulcan_file(input_path):
+    """
+    VULCAN reprocess:
+
+    - For each line, take only cols 7–42 (1-based) => Python slice [6:42]
+    - Replace '->' with '='
+    - Species rules (token-bounded by whitespace):
+        * 'O_1' -> 'O(1D)' (VULCAN only)
+        * Any token containing underscores: base_suffix1_suffix2... -> base(suffix1suffix2...)
+          Examples:
+            - H2O_l_s -> H2O(ls)
+            - CH2_1   -> CH2(1)
+            - A_a_b   -> A(ab)
+            - A_B     -> A(B)
+    - Output file name: insert 'reprocess_' before the original filename
+      e.g. VULCAN_output_H_He_O.dat -> reprocess_VULCAN_output_H_He_O.dat
+
+    Returns output path as a string.
+    """
+    input_path = Path(input_path)
+    if input_path.suffix.lower() != ".dat":
+        raise ValueError("Expected a .dat input file")
+
+    out_path = input_path.with_name("reprocess_" + input_path.name)
+
+    # convert token with underscores to base(suffixes_concatenated)
+    def underscore_to_parens(tok: str) -> str:
+        tok = tok.strip()
+        if tok == "O_1":
+            return "O(1D)"
+        if "_" not in tok:
+            return tok
+
+        base, rest = tok.split("_", 1)
+
+        # For any further underscores, concatenate the pieces (a_b -> ab)
+        rest_compact = rest.replace("_", "")
+
+        # If rest is empty (rare), return base
+        if not rest_compact:
+            return base
+
+        return f"{base}({rest_compact})"
+
+    with open(input_path, "r") as fin, open(out_path, "w") as fout:
+        for line in fin:
+            # Take cols 7–42 (1-based) => indices 6..41
+            chunk = line[6:42].rstrip("\n")
+
+            if "->" not in chunk:
+                continue
+
+            # Replace arrow with equals for display
+            chunk = chunk.replace("->", "=")
+
+            # Tokenize by whitespace, transform species tokens, then re-join with single spaces
+            tokens = chunk.split()
+            tokens = [underscore_to_parens(t) for t in tokens]
+
+            # Clean spacing around '='
+            out_line = " ".join(tokens)
+            out_line = re.sub(r"\s*=\s*", " = ", out_line).strip()
+
+            fout.write(out_line + "\n")
+    print(f"Done reprocessing {input_path}\n")
+    return str(out_path)
+
+
+def reprocess_moses_file(input_path):
+    """
+    Moses reprocess:
+
+    - Read columns 7–70 (1-based) => Python slice [6:70]
+    - Normalize spacing around '+' and '='
+    - Expand stoichiometric prefixes like 2H, 2OH, 2HO2, 3O, etc.
+      ONLY when the number is a PREFIX and the species starts with a capital letter.
+      Molecules like H2O are untouched.
+    - Output: reprocess_<original_name>.dat
+
+    Returns output path as a string.
+    """
+    import re
+    from pathlib import Path
+
+    input_path = Path(input_path)
+    if input_path.suffix.lower() != ".dat":
+        raise ValueError("Expected a .dat input file")
+
+    out_path = input_path.with_name("reprocess_" + input_path.name)
+
+    stoich_re = re.compile(r"^(\d+)([A-Z][A-Za-z0-9()]*)$")
+
+    def expand_side(side: str) -> str:
+        terms = [t.strip() for t in side.split("+")]
+        expanded = []
+
+        for term in terms:
+            if not term:
+                continue
+
+            m = stoich_re.match(term)
+            if m:
+                n = int(m.group(1))
+                sp = m.group(2)
+                expanded.extend([sp] * n)
+            else:
+                expanded.append(term)
+
+        return " + ".join(expanded)
+
+    with open(input_path, "r") as fin, open(out_path, "w") as fout:
+        for line in fin:
+            chunk = line[6:70].rstrip("\n")
+            chunk = chunk.strip()
+            if not chunk:
+                continue
+
+            # normalize separators
+            chunk = re.sub(r"\s*\+\s*", " + ", chunk)
+            chunk = re.sub(r"\s*=\s*", " = ", chunk)
+
+            if " = " not in chunk:
+                continue
+
+            lhs, rhs = chunk.split(" = ", 1)
+
+            lhs = expand_side(lhs)
+            rhs = expand_side(rhs)
+
+            fout.write(f"{lhs} = {rhs}\n")
+    print(f"Done reprocessing {input_path}\n")
+    return str(out_path)
+
+
+def reprocess_stand_file(input_path):
+    """
+
+    - Skip the FIRST line of the file.
+    - For all other lines: take only the first 50 columns, then apply:
+
+    1) Remove ALL underscores everywhere.
+    2) Replace "Oxyrane" (case-insensitive) with C2H4O.
+    3) Replace '=>' with '='.
+    4) Keep parentheses (never remove '(' or ')').
+    5) Remove excitation carets inside/around parentheses:
+         O_2(a^1Delta__g^) -> O2(a1Deltag)
+         A(X^Y) -> A(XY)
+         A(anything^) -> A(anything)
+       (i.e., remove '^' characters; parentheses remain)
+    6) Star states:
+         A^^*^, A^*^, A^* (token-bounded) -> A(*)
+         e.g., CH2^* -> CH2(*)
+    7) Charge cleanup:
+         - If + or - is part of a token (not a separator), canonicalize to ^+ or ^-
+           Examples:
+             A^+^^ -> A^+
+             Cl+   -> Cl^+
+             O2-   -> O2^-
+           This does NOT touch separator '+' with spaces around it.
+         - Ensures no space between species and its ^+/^-
+    8) Replace 'gamma' (case sensitive) with 'HV'.
+    9) Normalize electron notations to 'e^-':
+         e-, e^-, ^e-^, e^-^^, etc. -> e^-
+         Only when 'e' is standalone (bounded by start/space/^ on left).
+    10) Replace exact 'h{nu}' with 'HV'.
+
+    Output: reprocess_<original_name>.dat
+    Returns output path as a string.
+    """
+    import re
+    from pathlib import Path
+
+    input_path = Path(input_path)
+    if input_path.suffix.lower() != ".dat":
+        raise ValueError("Expected a .dat input file")
+
+    out_path = input_path.with_name("reprocess_" + input_path.name)
+
+    # Electron patterns (standalone e with various notations)
+    e_re = re.compile(r"(?:(?<=\s)|(?<=\^)|^)\^?e(?:\^\-|\-|\^\-?\^*|\-+\^*)", re.IGNORECASE)
+
+    # Star states inside a token: CH2^*, CH2^^*^, etc.
+    star_re = re.compile(r"^([A-Za-z0-9][A-Za-z0-9()]*)\^{0,2}\*\^{0,}$")
+
+    # Collapse caret-junk around charge: ^^+^^ -> ^+  (and same for -)
+    caret_charge_junk_re = re.compile(r"\^{1,}([+-])\^{0,}")
+
+    # Plain token charges: Cl+ / O2- -> Cl^+ / O2^- (must be token-wise)
+    plain_charge_tok_re = re.compile(r"^([A-Za-z0-9][A-Za-z0-9()]*)\s*([+-])$")
+
+    # Remove any caret that is not part of charge (we'll protect ^+ ^- and e^- first)
+    caret_noncharge_re = re.compile(r"\^(?![+-])")
+
+    def normalize_tokens(s: str) -> str:
+        toks = s.split()  # separator '+' becomes its own token if spaced; good
+        out = []
+
+        for t in toks:
+            # Normalize electron-like tokens early if they appear as a token
+            if t.lower().startswith("e"):
+                # token-wise normalization is handled by regex on whole string later
+                out.append(t)
+                continue
+
+            # Star state token
+            m_star = star_re.match(t)
+            if m_star:
+                out.append(m_star.group(1) + "(*)")
+                continue
+
+            # Collapse caret-junk charge inside token (e.g. A^+^^)
+            t2 = caret_charge_junk_re.sub(r"^\1", t)
+
+            # Plain charge token (e.g. Cl+)
+            m_plain = plain_charge_tok_re.match(t2)
+            if m_plain:
+                base, sign = m_plain.group(1), m_plain.group(2)
+                out.append(f"{base}^{sign}")
+            else:
+                out.append(t2)
+
+        return " ".join(out)
+
+    with open(input_path, "r") as fin, open(out_path, "w") as fout:
+        _ = next(fin, None)  # skip first line
+
+        for line in fin:
+            s = line[:50].rstrip("\n")
+            if not s.strip():
+                continue
+
+            # (10) h{nu} -> HV (exact)
+            s = s.replace("h{nu}", "HV")
+
+            # (2) Oxyrane -> C2H4O (case-insensitive)
+            s = re.sub(r"(?i)\boxyrane\b", "C2H4O", s)
+
+            # (3) => -> =
+            s = s.replace("=>", "=")
+
+            # (8) gamma -> HV (case sensitive)
+            s = s.replace("gamma", "HV")
+
+            # (1) remove underscores everywhere
+            s = s.replace("_", "")
+
+            # (9) normalize electrons -> e^-
+            s = e_re.sub("e^-", s)
+
+            # Token-wise star + charge processing (rules 6 & 7)
+            s = normalize_tokens(s)
+
+            # Protect electron so its caret isn't removed below
+            s = s.replace("e^-", "__ELECTRON__")
+
+            # (5) remove remaining carets used for excited-state notation, keep parentheses
+            # This turns O(^1^D) -> O(1D), O2(a^1Deltag^) -> O2(a1Deltag)
+            s = caret_noncharge_re.sub("", s)
+
+            # Restore electron
+            s = s.replace("__ELECTRON__", "e^-")
+
+            # Final cleanup spacing around separators
+            s = re.sub(r"\s*=\s*", " = ", s)
+            s = re.sub(r"\s+", " ", s).strip()
+
+            fout.write(s + "\n")
+    print(f"Done reprocessing {input_path}\n")
+    return str(out_path)
+
+

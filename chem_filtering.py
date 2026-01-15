@@ -55,34 +55,34 @@ NETWORK                                             FUNCTION
 
 elements= {"O", "H", "He"}
 
-elements_v= { "H", "N"}
+elements_v= { "Cl", "e"}
 
 
 pb.vulcan(
     path="/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/Input_VULCAN_fullnet.txt",
     allowed_elements=elements,
-      metadata = 'Y'
+      metadata = 'N'
 )
 
 
 pb.hu(
     path="/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/Input_HU2012.txt",
-    allowed_elements=elements, metadata = 'Y'
+    allowed_elements=elements, metadata = 'N'
 )
 
 pb.moses(
     path="/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/MOSES_2011_data",
-    allowed_elements=elements, metadata = 'Y'
+    allowed_elements=elements, metadata = 'N'
 )
 
 pb.stand(
     path="/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/Input_STAND2020.dat",
-    allowed_elements=elements, metadata = 'Y'
+    allowed_elements=elements_v, metadata = 'N'
 )
 
 pb.velliet_venot(
     path="/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/VELLIET_VENOT_2025",
-    allowed_elements=elements, metadata = 'Y'
+    allowed_elements=elements, metadata = 'N'
 )
 
 pb.agundez(

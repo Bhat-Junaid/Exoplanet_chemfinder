@@ -1,34 +1,3 @@
-### VULCAN S-N-C-H-O full network ###
-### including most of the oxidizing mechanisms, suitable for an Earth-like atmosphere
-### Developement log ###
-# 7.2024 update CH2OH+M=H+H2CO+M and CH3O+M=H+H2CO+M (See Appendix B in Tsai+2024b)
-# 3.2021 Include NO2 -> NO + O_1 needs to be included for O2-rich atm
-# 1.2021 NH + NO2 not included, which are in Hu 2012
-# TODO : Add S2O and S2O2 for Venus
-# 8.2020  No nasa9 data for SNO: S + NO + M -> SNO + M and H2S2
-# e.g.
-# 617	[ HS2 + H2 -> H2S2 + H               ]  1.00E-11     0.000   14500.0       Jim
-# 621	[ HS2 + H2S -> H2S2 + SH             ]  1.00E-11     0.000    7800.0       Jim
-# 609	[ SH + H2S -> H2S2 + H               ]  1.00E-11     0.000   13700.0       Jim
-# 611	[ SH + H2S2 -> H2S + HS2             ]  1.00E-11     0.000       0.0       Jim
-# 615	[ H2S2 + OH -> H2O + HS2             ]  1.00E-10     0.000       0.0       Jim
-# 763	[ SH + SH + M -> H2S2 + M            ]   2.40E-29   -0.76       0.0         2006CER/KRO437-455
-# 9.2019 updated and added a few CH2_1 and O_1 reactions; removing CH3NH (only CH2NH, CH2NH2, CH3NH2 are important (Tsai2018))
-# v813: Add CH3HN2, CH3HN, CH2NH2, and CH2NH; v814 reduced from v813 and reromved a few reactions involving CH2NH
-# v827: removed N_D (N2D) because I don't have its nasa9 gibbs energy (only nasa7 in venot's thesis)
-# v925: removed O + C2H3 -> HCO + CH2 and O + C2H4 -> H2CO + CH2; corrected a typo in NH + NO -> N2O + H
-# v518: added NH2 + NH3 -> N2H3 + H2; NH2 + NH2 + M -> N2H4 + M; NH3 -> NH + H + H (2nd branch)
-# v618: added  CH + H2O -> H2CO + H; OH photo; CH3CHO; add HCCO + H2 -> H2CCO + H and OH + C2H2 -> H2CCO + H
-# v018: added HNO (HNO <-> NOx) and HNO2
-# v118: added the photodisociation of NO and NO2
-# v218: added more HNO <-> NOx reactions (so far v118 is the best)
-# v0718: Higher rate of CH + CH2 from Moses; updated C + C + M -> C2 + M and reverse NH + M -> N + H
-##########################################################################################################################################################
-##########################################################################################################################################################
-# In Temp, KIDA means the values are close to those on KIDA
-# in the form of k = A T^B exp(-C/T)
-# Two-body Reactions
-# id	Reactions                           	A       	B       	C      Ref 			             Temp
 1    [ OH + H2 -> H2O + H                 ]  3.57E-16     1.520    1740.0      1992OLD/LOG8426-8430      250-2580
 3    [ O + H2 -> OH + H                   ]  8.52E-20     2.670    3160.0                                300-2500
 5    [ O + H2O -> OH + OH                 ]  8.20E-14     0.950    8570.0                                250-2400
@@ -53,8 +22,6 @@
 927  [ O_1 + O3 -> O2 + O2                ]  1.20E-10     0.          0.0       1997DEM/SAN1-266         200-300
 929  [ O_1 + O3 -> O2 + O + O             ]  1.20E-10     0.          0.0       1997DEM/SAN1-266         200-300
 973  [ He -> He                           ]  0.00E+00     0.000       0.0
-# 3-body and Disscoiation Reactions
-# id	# Reactions                         	A_0     	B_0     	C_0     	A_inf   	B_inf   	C_inf		Ref 		  	Temp
 975  [ H + H + M -> H2 + M                ]  2.70E-31    -0.600       0.0      3.31E-06    -1.000       0.0                             100-5000, ??
 977  [ H + O + M -> OH + M                ]  1.30E-29    -1.000       0.0      1.00E-11     0.000       0.0                             300-2500, ??
 979  [ OH + H + M -> H2O + M              ]  3.89E-25    -2.000       0.0      4.26E-11     0.230     -57.5                             300-3000, 300-3000
@@ -62,16 +29,8 @@
 1075 [ H + O2 + M -> HO2 + M              ]  2.17E-29    -1.100       0.0      7.51E-11     0.          0.        2012TUR/NAG284-302 / 1997ATK/BAU1329-1499                   300-1850, 200-400
 1077 [ HO2 + HO2 + M -> H2O2 + O2 + M     ]  1.90E-33     0.       -980.0      2.20E-13     0.       -600.        1997ATK/BAU1329-1499 / 2004ATK/BAU1461-1738                 200-300, 230-420
 1089 [ OH + OH + M -> H2O2 + M            ]  7.97E-31    -0.760       0.0      1.51E-11    -0.370       0.0       1992BAU/COB411-429 / 1992BAU/COB411-429                        250-1400 /200-1400
-# 3-body reactions without high-pressure rates
-# id	# Reactions                         	A_0     	B_0     	C_0        	Ref 		  	    Temp
 1125 [ O + O + M -> O2 + M                ]	  5.21E-35	 0.		   -900.		1986TSA/HAM1087
-# special cases
-# id	# Reactions
-# reverse stops
-# condensation
 1143 [ H2O -> H2O_l_s                     ]
-# photo disscoiation (no reversals!) 		            # use sp to link br_index to RXXX
-# id	# Reactions                                     sp		br_index #(starting from 1)
 1147 [ H2O -> H + OH                      ]       		H2O		1
 1149 [ H2O -> H2 + O_1                    ]              H2O		2
 1151 [ H2O -> H + H + O                   ]              H2O		3
@@ -83,4 +42,3 @@
 1205 [ O3 -> O2 + O_1                     ]              O3      2
 1217 [ HO2 -> O + OH                      ]              HO2     1
 1219 [ H2O2 -> OH + OH                    ]              H2O2    1
-# re_end
