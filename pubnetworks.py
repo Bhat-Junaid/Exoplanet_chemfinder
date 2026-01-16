@@ -680,7 +680,7 @@ def velliet_venot(path, allowed_elements, metadata="N"):
 
                 if not raw.strip():
                     continue
-
+                    
                 species = extract_species_from_line(raw)
 
                 if species and all(species_allowed(s) for s in species):
@@ -884,22 +884,105 @@ IMP :: GENERAL CHARACTERISTICS OF THE FILES PRODUCED
 chemical formula) in the output file
 
 - For VELLIET_VENOT; O3P(in input file) is written as O(in output file). 
+- FOR VV; " OOH " changes to HO2.
+- For Hu; we add " + T" to lhs for the thermal decomposition reactions
 
 """
 
 
-
 def reprocess_velliet_file(path):
+    """
+    Reprocess a Velliet/Venot file into "A + B = C + D" reactions.
+
+    Existing behavior (unchanged):
+    - Skip blank lines
+    - Skip lines starting with lowercase OR starting with '-'
+    - Read only first 110 columns
+    - Convert space-blocks:
+        3..11 spaces  -> " + "
+        >=30 spaces   -> " = "
+        otherwise     -> " "
+    - Cleanup doubles and normalize whitespace
+    - Replace token O3P -> O
+
+    NEW behavior (your request):
+    - Some sections contain 3-body reactions and must get " + M" on BOTH sides.
+      Triggered by section header lines in the file:
+        Start adding M at: reactions_1.dat
+          Stop adding M at: reactions_3.dat if present, else at reactions_4.dat
+        Start adding M at: reactions_5.dat
+          Stop adding M at: reactions_7.dat
+        Start adding M at: reactions_9.dat
+          Stop adding M at: reactions_10.dat
+
+      Applies only to reaction lines (same filtering rule: not starting with lowercase, not starting with '-').
+    """
     path = Path(path)
     out_path = path.with_name("reprocess_" + path.name)
 
     processed = []
+
+    # --- section control for "+ M" injection ---
+    add_M = False
+    stop_after_1_2 = None  # will be decided on-the-fly: 3 if encountered, else stop at 4
+
+    # robust header detector
+    hdr_re = re.compile(r"\breactions_(\d+)\.dat\b", re.IGNORECASE)
+
+    def add_M_both_sides(reaction: str) -> str:
+        # add " + M" to both sides of " = " exactly once
+        if " = " not in reaction:
+            return reaction
+
+        lhs, rhs = reaction.split(" = ", 1)
+
+        # If M already present as a token, do nothing for that side
+        lhs_tokens = lhs.split(" + ")
+        rhs_tokens = rhs.split(" + ")
+
+        if "M" not in lhs_tokens:
+            lhs = lhs.rstrip() + " + M"
+        if "M" not in rhs_tokens:
+            rhs = rhs.rstrip() + " + M"
+
+        return lhs + " = " + rhs
 
     with open(path) as f:
         for line in f:
             if not line.strip():
                 continue
 
+            # ---- NEW: detect section headers BEFORE skipping lowercase lines ----
+            m_hdr = hdr_re.search(line)
+            if m_hdr:
+                n = int(m_hdr.group(1))
+
+                if n == 1:
+                    add_M = True
+                    stop_after_1_2 = None
+                elif n == 2:
+                    add_M = True
+                elif n == 3:
+                    add_M = False
+                    stop_after_1_2 = 3
+                elif n == 4:
+                    # stop after reactions_1/reactions_2 if reactions_3 never appeared
+                    if stop_after_1_2 is None:
+                        add_M = False
+                        stop_after_1_2 = 4
+                elif n == 5:
+                    add_M = True
+                elif n == 7:
+                    add_M = False
+                elif n == 9:
+                    add_M = True
+                elif 10 <= n <= 14:
+                    add_M = False
+
+                # header lines are not reactions
+                continue
+
+            # ---- existing filtering (unchanged) ----
             if line[0].islower() or line.startswith("-"):
                 continue
 
@@ -923,21 +1006,33 @@ def reprocess_velliet_file(path):
 
             reaction = "".join(new)
 
-            # NEW: Replace O3P token with O
+            # replace O3P token with O
             reaction = re.sub(r"\bO3P\b", "O", reaction)
+            reaction = re.sub(r"\bOOH\b", "HO2", reaction)
 
             # clean up accidental doubles
             reaction = re.sub(r"\s+\+\s+\+", " + ", reaction)
             reaction = re.sub(r"\s+=\s+=", " = ", reaction)
-            reaction = re.sub(r"\s+", " ", reaction)
+            reaction = re.sub(r"\s+", " ", reaction).strip()
 
-            processed.append(reaction.strip())
+            # ---- NEW: add "+ M" for the specified sections ----
+            if add_M:
+                reaction = add_M_both_sides(reaction)
+
+                # keep formatting clean after adding M
+                reaction = re.sub(r"\s+", " ", reaction).strip()
+                reaction = re.sub(r"\s*\+\s*", " + ", reaction)
+                reaction = re.sub(r"\s*=\s*", " = ", reaction)
+
+            processed.append(reaction)
 
     with open(out_path, "w") as f:
         for r in processed:
             f.write(r + "\n")
+
     print(f"Done reprocessing {path}\n")
     return out_path
+
 
 def reprocess_agundez_file(input_path):
     """
@@ -1020,6 +1115,8 @@ def reprocess_hu_file(input_path):
                 continue
 
             starts_with_M = line.startswith("M")
+            starts_with_T = line.startswith("T")
+
 
             chunk = line[4:37].rstrip("\n")
 
@@ -1037,6 +1134,10 @@ def reprocess_hu_file(input_path):
                     lhs += " + M"
                 if rhs:
                     rhs += " + M"
+            if starts_with_T:
+                lhs = lhs.strip()
+                if lhs:
+                    lhs += " + T"
 
             out_line = f"{lhs} = {rhs}".strip()
             out_line = normalize_caret_notation_in_line(out_line)
@@ -1514,7 +1615,7 @@ def build_unique_reactions(reprocess_paths, long_table="N"):
             f1.write(entry["repr"] + "\n")
 
     # --- file 2: metadata (fixed widths)
-    RXN_W = 70
+    RXN_W = 50
     COL_W = 10
 
     def fmt_rxn(s):
