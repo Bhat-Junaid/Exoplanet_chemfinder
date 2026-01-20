@@ -3,6 +3,7 @@ import os
 from collections import Counter, OrderedDict
 from pathlib import Path
 
+
 # ============================ VULCAN NETWORK ==============================================
 
 def vulcan(path, allowed_elements, metadata="N"):
@@ -1051,6 +1052,7 @@ def reprocess_agundez_file(input_path):
     # Match a "word" chunk containing underscore, stopping at whitespace.
     # Example matches: A_BC, A_3X, O_1D, CH3_foo
     pattern = re.compile(r"([^\s_]+)_([^\s]+)")
+    
 
     with open(input_path, "r") as fin, open(out_path, "w") as fout:
         for line in fin:
@@ -1410,12 +1412,15 @@ def reprocess_stand_file(input_path):
             s = s.replace("__ELECTRON__", "e^-")
 
             # Final cleanup spacing around separators
+            s = s.replace("a1Deltag", "1Delta")
             s = re.sub(r"\s*=\s*", " = ", s)
             s = re.sub(r"\s+", " ", s).strip()
 
             fout.write(s + "\n")
     print(f"Done reprocessing {input_path}\n")
     return str(out_path)
+
+########## Antonio 2007 chemistry.dat processing       #########
 
 
 
@@ -1465,9 +1470,10 @@ def build_unique_reactions(reprocess_paths, long_table="N"):
     - The first occurrence per file is used for metadata (line number) and long-table text.
     """
 
-
+    nof = len(reprocess_paths)
     if not isinstance(reprocess_paths, (list, tuple)) or len(reprocess_paths) != 6:
-        raise ValueError("reprocess_paths must be a list/tuple of exactly 6 file paths.")
+        print(f"\n {nof} files given \n reprocess_paths must be a list/tuple of exactly 6 file paths.")
+        print("Handles more than 6 files as well. Just a sanity check....")
 
     long_table = (long_table or "N").strip().upper()
     if long_table not in {"Y", "N"}:
@@ -1508,22 +1514,29 @@ def build_unique_reactions(reprocess_paths, long_table="N"):
     def strip_paren_chars(species):
     # keep contents, drop only parentheses characters
         return species.replace("(", "").replace(")", "")
-
+ 
     def normalize_species_for_matching(sp):
-        """
-        Matching-only normalization:
-        - remove parentheses characters '(' and ')'
-        - if the resulting token is ONLY uppercase letters (A–Z), sort letters
-        so OH == HO, ABC == CBA
-        - otherwise leave unchanged (digits, charges, excited-state text, etc.)
-        """
         sp2 = strip_paren_chars(sp)
 
-        # Only reorder if token is exactly [A-Z]+
+        # NEW: normalize OH/HO with charges, assuming at most one caret in the token
+        # Accept: OH^+, OH^++, HO^---, OH++, HO-
+        # Preserve multiplicity: OH^+ != OH^++
+        # Canonicalize base: OH/HO -> HO
+        m = re.fullmatch(r"([A-Z]{2})(?:\^)?([+-]+)", sp2)
+        if m:
+            base, charge = m.group(1), m.group(2)
+            if base in {"OH", "HO"}:
+                # reject mixed + and - in the same token
+                if "+" in charge and "-" in charge:
+                    return sp2
+                return "".join(sorted(base)) + "^" + charge  # e.g., HO^++, HO^-
+
+        # Existing rule: reorder only if token is exactly [A-Z]+
         if re.fullmatch(r"[A-Z]+", sp2):
             sp2 = "".join(sorted(sp2))
 
         return sp2
+
 
 
     def canonicalize_side(side_text):
@@ -1559,7 +1572,8 @@ def build_unique_reactions(reprocess_paths, long_table="N"):
 
     # stable order (to keep outputs deterministic):
     # If the "usual" names exist, use that order, otherwise use discovered order.
-    preferred = ["Hu", "Agundez", "velliet_venot", "Velliet", "Moses", "VULCAN", "stand", "Stand"]
+    preferred = ["Hu", "Agundez", "Velliet", "Moses", "VULCAN", "Stand"]
+
     def rank(n):
         return preferred.index(n) if n in preferred else 10_000 + net_order.index(n)
     net_order = sorted(net_order, key=rank)
@@ -1605,9 +1619,9 @@ def build_unique_reactions(reprocess_paths, long_table="N"):
     # -------------------------
     # write outputs
     # -------------------------
-    out1 = f"Uniq_reactions_{tag}.dat"
-    out2 = f"Uniq_reactions_metadata_{tag}.dat"
-    out3 = f"Uniq_reactions_longtable_{tag}.dat"
+    out1 = f"uniq_reactions_{tag}.dat"
+    out2 = f"uniq_reactions_metadata_{tag}.dat"
+    out3 = f"uniq_reactions_longtable_{tag}.dat"
 
     # --- file 1: unique reactions list
     with open(out1, "w") as f1:
@@ -1671,7 +1685,7 @@ def build_unique_reactions(reprocess_paths, long_table="N"):
             # final totals row
             f3.write("".join(fmt_long(str(counts[net])) for net in net_order) + "\n")
 
-
+    print("done finding unique reactions....")
     return {
         "tag": tag,
         "networks": net_order,
