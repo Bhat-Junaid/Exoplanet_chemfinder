@@ -891,7 +891,7 @@ chemical formula) in the output file
 """
 
 
-def reprocess_velliet_file(path):
+def reprocess_velliet_file(path, rate_const="Y"):
     """
     Reprocess a Velliet/Venot file into "A + B = C + D" reactions.
 
@@ -917,11 +917,22 @@ def reprocess_velliet_file(path):
           Stop adding M at: reactions_10.dat
 
       Applies only to reaction lines (same filtering rule: not starting with lowercase, not starting with '-').
+
+    RATE CONSTANT EXTRA OUTPUT (your request):
+    - If rate_const == "Y":
+        also write a second file that keeps the processed reaction, then appends
+        the original line content AFTER column 110 (the part we previously ignored).
+      Output name:
+        reprocess_rate_const_<original_filename>
     """
     path = Path(path)
     out_path = path.with_name("reprocess_" + path.name)
 
+    rate_const = str(rate_const).strip().upper()
+    out_path_rc = path.with_name("reprocess_rate_const_" + path.name) if rate_const == "Y" else None
+
     processed = []
+    processed_rc = []  # only used if rate_const == "Y"
 
     # --- section control for "+ M" injection ---
     add_M = False
@@ -952,6 +963,9 @@ def reprocess_velliet_file(path):
         for line in f:
             if not line.strip():
                 continue
+
+            # keep full original (no newline) for rate-constant output
+            original_full = line.rstrip("\n")
 
             # ---- NEW: detect section headers BEFORE skipping lowercase lines ----
             m_hdr = hdr_re.search(line)
@@ -987,6 +1001,7 @@ def reprocess_velliet_file(path):
             if line[0].islower() or line.startswith("-"):
                 continue
 
+            # the part you already used for reaction parsing
             line = line[:110].rstrip()
 
             # split into text and space blocks
@@ -1027,21 +1042,48 @@ def reprocess_velliet_file(path):
 
             processed.append(reaction)
 
+            # ---- NEW: optional rate-constant output (append ignored tail after col 110) ----
+            if rate_const == "Y":
+                tail = ""
+                if len(original_full) > 110:
+                    tail = original_full[110:]  # keep EXACTLY what was previously ignored
+                tail = tail.rstrip()
+
+                if tail:
+                    processed_rc.append(reaction.ljust(50)[:50] + "\t" + tail)
+                else:
+                    processed_rc.append(reaction.ljust(50)[:50])
+
     with open(out_path, "w") as f:
         for r in processed:
             f.write(r + "\n")
 
+    if rate_const == "Y":
+        with open(out_path_rc, "w") as f:
+            for r in processed_rc:
+                f.write(r + "\n")
+
     print(f"Done reprocessing {path}\n")
+    if rate_const == "Y":
+        print(f"Also wrote rate-constant version: {out_path_rc}\n")
+
     return out_path
 
 
-def reprocess_agundez_file(input_path):
+def reprocess_agundez_file(input_path, rate_const="Y"):
     """
     Reprocess an Agundez_output_*.dat file:
       - keep only first 50 characters of each line
       - convert tokens like A_BC -> A(BC), where BC goes until next whitespace
       - output is exactly 50 characters wide per line (padded or trimmed)
       - writes to reprocess_<original_name>.dat
+
+    RATE CONSTANT EXTRA OUTPUT (your request):
+    - If rate_const == "Y":
+        also write a second file that keeps the processed 50-col chunk, then appends
+        the original line content AFTER column 50 (the part we previously ignored).
+      Output name:
+        reprocess_rate_const_<original_filename>.dat
     """
     input_path = Path(input_path)
     if input_path.suffix.lower() != ".dat":
@@ -1049,42 +1091,76 @@ def reprocess_agundez_file(input_path):
 
     out_path = input_path.with_name("reprocess_" + input_path.name)
 
+    rate_const = str(rate_const).strip().upper()
+    out_path_rc = (
+        input_path.with_name("reprocess_rate_const_" + input_path.name)
+        if rate_const == "Y"
+        else None
+    )
+
     # Match a "word" chunk containing underscore, stopping at whitespace.
     # Example matches: A_BC, A_3X, O_1D, CH3_foo
     pattern = re.compile(r"([^\s_]+)_([^\s]+)")
-    
 
     with open(input_path, "r") as fin, open(out_path, "w") as fout:
-        for line in fin:
-            # Take only the first 50 columns from the original line
-            chunk = line[:50].rstrip("\n")
+        fout_rc = open(out_path_rc, "w") if rate_const == "Y" else None
+        try:
+            for line in fin:
+                original_full = line.rstrip("\n")
 
-            # Replace underscore form within that 50-col chunk
-            def repl(m):
-                left = m.group(1)
-                right = m.group(2)
-                return f"{left}({right})"
+                # Take only the first 50 columns from the original line
+                chunk = line[:50].rstrip("\n")
 
-            chunk = pattern.sub(repl, chunk)
+                # Replace underscore form within that 50-col chunk
+                def repl(m):
+                    left = m.group(1)
+                    right = m.group(2)
+                    return f"{left}({right})"
 
-            # Enforce exact width 50 after replacement
-            if len(chunk) < 50:
-                chunk = chunk.ljust(50)
-            else:
-                chunk = chunk[:50]
+                chunk = pattern.sub(repl, chunk)
 
-            fout.write(chunk + "\n")
+                # Enforce exact width 50 after replacement
+                if len(chunk) < 50:
+                    chunk = chunk.ljust(50)
+                else:
+                    chunk = chunk[:50]
+
+                fout.write(chunk + "\n")
+
+                # Optional: append ignored tail after col 50
+                if fout_rc is not None:
+                    tail = ""
+                    if len(original_full) > 50:
+                        tail = original_full[50:]
+                    tail = tail.rstrip()
+
+                    if tail:
+                        fout_rc.write(chunk.ljust(50)[:50] + "\t" + tail + "\n")
+                    else:
+                        fout_rc.write(chunk.ljust(50)[:50] + "\n")
+        finally:
+            if fout_rc is not None:
+                fout_rc.close()
+
     print(f"Done reprocessing {input_path}\n")
+    if rate_const == "Y":
+        print(f"Also wrote rate-constant version: {out_path_rc}\n")
     return str(out_path)
 
-
-def reprocess_hu_file(input_path):
+def reprocess_hu_file(input_path, rate_const="Y"):
 
     input_path = Path(input_path)
     if input_path.suffix.lower() != ".dat":
         raise ValueError("Expected a .dat input file")
 
     out_path = input_path.with_name("reprocess_" + input_path.name)
+
+    rate_const = str(rate_const).strip().upper()
+    out_path_rc = (
+        input_path.with_name("reprocess_rate_const_" + input_path.name)
+        if rate_const == "Y"
+        else None
+    )
 
     first_gap_re = re.compile(r"\s{2,}")
 
@@ -1112,44 +1188,64 @@ def reprocess_hu_file(input_path):
         return " ".join(out)
 
     with open(input_path, "r") as fin, open(out_path, "w") as fout:
-        for line in fin:
-            if not line.startswith(("R", "M", "T")):
-                continue
+        fout_rc = open(out_path_rc, "w") if rate_const == "Y" else None
+        try:
+            for line in fin:
+                original_full = line.rstrip("\n")
 
-            starts_with_M = line.startswith("M")
-            starts_with_T = line.startswith("T")
+                if not line.startswith(("R", "M", "T")):
+                    continue
 
+                starts_with_M = line.startswith("M")
+                starts_with_T = line.startswith("T")
 
-            chunk = line[4:37].rstrip("\n")
+                chunk = line[4:37].rstrip("\n")
 
-            m = first_gap_re.search(chunk)
-            if not m:
-                continue
+                m = first_gap_re.search(chunk)
+                if not m:
+                    continue
 
-            lhs = chunk[:m.start()].rstrip()
-            rhs = chunk[m.end():].lstrip()
+                lhs = chunk[:m.start()].rstrip()
+                rhs = chunk[m.end():].lstrip()
 
-            if starts_with_M:
-                lhs = lhs.strip()
-                rhs = rhs.strip()
-                if lhs:
-                    lhs += " + M"
-                if rhs:
-                    rhs += " + M"
-            if starts_with_T:
-                lhs = lhs.strip()
-                if lhs:
-                    lhs += " + T"
+                if starts_with_M:
+                    lhs = lhs.strip()
+                    rhs = rhs.strip()
+                    if lhs:
+                        lhs += " + M"
+                    if rhs:
+                        rhs += " + M"
+                if starts_with_T:
+                    lhs = lhs.strip()
+                    if lhs:
+                        lhs += " + T"
 
-            out_line = f"{lhs} = {rhs}".strip()
-            out_line = normalize_caret_notation_in_line(out_line)
+                out_line = f"{lhs} = {rhs}".strip()
+                out_line = normalize_caret_notation_in_line(out_line)
 
-            fout.write(out_line + "\n")
+                fout.write(out_line + "\n")
+
+                # Optional: append ignored tail after the chunk slice end (index 37)
+                if fout_rc is not None:
+                    tail = ""
+                    if len(original_full) > 37:
+                        tail = original_full[37:]  # EXACTLY what was ignored
+                    tail = tail.rstrip()
+
+                    if tail:
+                        fout_rc.write(out_line.ljust(50)[:50] + "\t" + tail + "\n")
+                    else:
+                        fout_rc.write(out_line.ljust(50)[:50]  + "\n")
+        finally:
+            if fout_rc is not None:
+                fout_rc.close()
+
     print(f"Done reprocessing {input_path}\n")
+    if rate_const == "Y":
+        print(f"Also wrote rate-constant version: {out_path_rc}\n")
     return str(out_path)
 
-
-def reprocess_vulcan_file(input_path):
+def reprocess_vulcan_file(input_path, rate_const="Y"):
     """
     VULCAN reprocess:
 
@@ -1166,6 +1262,13 @@ def reprocess_vulcan_file(input_path):
     - Output file name: insert 'reprocess_' before the original filename
       e.g. VULCAN_output_H_He_O.dat -> reprocess_VULCAN_output_H_He_O.dat
 
+    RATE CONSTANT EXTRA OUTPUT (your request):
+    - If rate_const == "Y":
+        also write a second file that keeps the processed out_line, then appends
+        the original line content AFTER column 42 (the part we previously ignored).
+      Output name:
+        reprocess_rate_const_<original_filename>
+
     Returns output path as a string.
     """
     input_path = Path(input_path)
@@ -1173,6 +1276,13 @@ def reprocess_vulcan_file(input_path):
         raise ValueError("Expected a .dat input file")
 
     out_path = input_path.with_name("reprocess_" + input_path.name)
+
+    rate_const = str(rate_const).strip().upper()
+    out_path_rc = (
+        input_path.with_name("reprocess_rate_const_" + input_path.name)
+        if rate_const == "Y"
+        else None
+    )
 
     # convert token with underscores to base(suffixes_concatenated)
     def underscore_to_parens(tok: str) -> str:
@@ -1194,30 +1304,51 @@ def reprocess_vulcan_file(input_path):
         return f"{base}({rest_compact})"
 
     with open(input_path, "r") as fin, open(out_path, "w") as fout:
-        for line in fin:
-            # Take cols 7–42 (1-based) => indices 6..41
-            chunk = line[6:42].rstrip("\n")
+        fout_rc = open(out_path_rc, "w") if rate_const == "Y" else None
+        try:
+            for line in fin:
+                original_full = line.rstrip("\n")
 
-            if "->" not in chunk:
-                continue
+                # Take cols 7–42 (1-based) => indices 6..41
+                chunk = line[6:42].rstrip("\n")
 
-            # Replace arrow with equals for display
-            chunk = chunk.replace("->", "=")
+                if "->" not in chunk:
+                    continue
 
-            # Tokenize by whitespace, transform species tokens, then re-join with single spaces
-            tokens = chunk.split()
-            tokens = [underscore_to_parens(t) for t in tokens]
+                # Replace arrow with equals for display
+                chunk = chunk.replace("->", "=")
 
-            # Clean spacing around '='
-            out_line = " ".join(tokens)
-            out_line = re.sub(r"\s*=\s*", " = ", out_line).strip()
+                # Tokenize by whitespace, transform species tokens, then re-join with single spaces
+                tokens = chunk.split()
+                tokens = [underscore_to_parens(t) for t in tokens]
 
-            fout.write(out_line + "\n")
+                # Clean spacing around '='
+                out_line = " ".join(tokens)
+                out_line = re.sub(r"\s*=\s*", " = ", out_line).strip()
+
+                fout.write(out_line + "\n")
+
+                # Optional: append ignored tail after slice end index 42
+                if fout_rc is not None:
+                    tail = ""
+                    if len(original_full) > 42:
+                        tail = original_full[44:]  # EXACTLY what was ignored
+                    tail = tail.rstrip()
+
+                    if tail:
+                        fout_rc.write(out_line.ljust(50)[:50] + "\t" + tail + "\n")
+                    else:
+                        fout_rc.write(out_line.ljust(50)[:50] + "\n")
+        finally:
+            if fout_rc is not None:
+                fout_rc.close()
+
     print(f"Done reprocessing {input_path}\n")
+    if rate_const == "Y":
+        print(f"Also wrote rate-constant version: {out_path_rc}\n")
     return str(out_path)
 
-
-def reprocess_moses_file(input_path):
+def reprocess_moses_file(input_path, rate_const="Y"):
     """
     Moses reprocess:
 
@@ -1228,16 +1359,28 @@ def reprocess_moses_file(input_path):
       Molecules like H2O are untouched.
     - Output: reprocess_<original_name>.dat
 
+    RATE CONSTANT EXTRA OUTPUT (your request):
+    - If rate_const == "Y":
+        also write a second file that keeps the processed reaction, then appends
+        the original line content AFTER column 70 (the part we previously ignored).
+      Output name:
+        reprocess_rate_const_<original_filename>
+
     Returns output path as a string.
     """
-    import re
-    from pathlib import Path
 
     input_path = Path(input_path)
     if input_path.suffix.lower() != ".dat":
         raise ValueError("Expected a .dat input file")
 
     out_path = input_path.with_name("reprocess_" + input_path.name)
+
+    rate_const = str(rate_const).strip().upper()
+    out_path_rc = (
+        input_path.with_name("reprocess_rate_const_" + input_path.name)
+        if rate_const == "Y"
+        else None
+    )
 
     stoich_re = re.compile(r"^(\d+)([A-Z][A-Za-z0-9()]*)$")
 
@@ -1260,30 +1403,52 @@ def reprocess_moses_file(input_path):
         return " + ".join(expanded)
 
     with open(input_path, "r") as fin, open(out_path, "w") as fout:
-        for line in fin:
-            chunk = line[6:70].rstrip("\n")
-            chunk = chunk.strip()
-            if not chunk:
-                continue
+        fout_rc = open(out_path_rc, "w") if rate_const == "Y" else None
+        try:
+            for line in fin:
+                original_full = line.rstrip("\n")
 
-            # normalize separators
-            chunk = re.sub(r"\s*\+\s*", " + ", chunk)
-            chunk = re.sub(r"\s*=\s*", " = ", chunk)
+                chunk = line[6:70].rstrip("\n")
+                chunk = chunk.strip()
+                if not chunk:
+                    continue
 
-            if " = " not in chunk:
-                continue
+                # normalize separators
+                chunk = re.sub(r"\s*\+\s*", " + ", chunk)
+                chunk = re.sub(r"\s*=\s*", " = ", chunk)
 
-            lhs, rhs = chunk.split(" = ", 1)
+                if " = " not in chunk:
+                    continue
 
-            lhs = expand_side(lhs)
-            rhs = expand_side(rhs)
+                lhs, rhs = chunk.split(" = ", 1)
 
-            fout.write(f"{lhs} = {rhs}\n")
+                lhs = expand_side(lhs)
+                rhs = expand_side(rhs)
+
+                out_line = f"{lhs} = {rhs}"
+                fout.write(out_line + "\n")
+
+                # Optional: append ignored tail after slice end index 70
+                if fout_rc is not None:
+                    tail = ""
+                    if len(original_full) > 70:
+                        tail = original_full[70:]  # EXACTLY what was ignored
+                    tail = tail.rstrip()
+
+                    if tail:
+                        fout_rc.write(out_line.ljust(50)[:50] + "\t" + tail + "\n")
+                    else:
+                        fout_rc.write(out_line.ljust(50)[:50]  + "\n")
+        finally:
+            if fout_rc is not None:
+                fout_rc.close()
+
     print(f"Done reprocessing {input_path}\n")
+    if rate_const == "Y":
+        print(f"Also wrote rate-constant version: {out_path_rc}\n")
     return str(out_path)
 
-
-def reprocess_stand_file(input_path):
+def reprocess_stand_file(input_path, rate_const="Y"):
     """
 
     - Skip the FIRST line of the file.
@@ -1317,15 +1482,26 @@ def reprocess_stand_file(input_path):
 
     Output: reprocess_<original_name>.dat
     Returns output path as a string.
-    """
-    import re
-    from pathlib import Path
 
+    RATE CONSTANT EXTRA OUTPUT (your request):
+    - If rate_const == "Y":
+        also write a second file that keeps the processed line, then appends
+        the original line content AFTER column 50 (the part we previously ignored).
+      Output name:
+        reprocess_rate_const_<original_filename>
+    """
     input_path = Path(input_path)
     if input_path.suffix.lower() != ".dat":
         raise ValueError("Expected a .dat input file")
 
     out_path = input_path.with_name("reprocess_" + input_path.name)
+
+    rate_const = str(rate_const).strip().upper()
+    out_path_rc = (
+        input_path.with_name("reprocess_rate_const_" + input_path.name)
+        if rate_const == "Y"
+        else None
+    )
 
     # Electron patterns (standalone e with various notations)
     e_re = re.compile(r"(?:(?<=\s)|(?<=\^)|^)\^?e(?:\^\-|\-|\^\-?\^*|\-+\^*)", re.IGNORECASE)
@@ -1373,52 +1549,75 @@ def reprocess_stand_file(input_path):
         return " ".join(out)
 
     with open(input_path, "r") as fin, open(out_path, "w") as fout:
-        _ = next(fin, None)  # skip first line
+        fout_rc = open(out_path_rc, "w") if rate_const == "Y" else None
+        try:
+            _ = next(fin, None)  # skip first line
 
-        for line in fin:
-            s = line[:50].rstrip("\n")
-            if not s.strip():
-                continue
+            for line in fin:
+                original_full = line.rstrip("\n")
 
-            # (10) h{nu} -> HV (exact)
-            s = s.replace("h{nu}", "HV")
+                s = line[:50].rstrip("\n")
+                if not s.strip():
+                    continue
 
-            # (2) Oxyrane -> C2H4O (case-insensitive)
-            s = re.sub(r"(?i)\boxyrane\b", "C2H4O", s)
+                # (10) h{nu} -> HV (exact)
+                s = s.replace("h{nu}", "HV")
 
-            # (3) => -> =
-            s = s.replace("=>", "=")
+                # (2) Oxyrane -> C2H4O (case-insensitive)
+                s = re.sub(r"(?i)\boxyrane\b", "C2H4O", s)
 
-            # (8) gamma -> HV (case sensitive)
-            s = s.replace("gamma", "HV")
+                # (3) => -> =
+                s = s.replace("=>", "=")
 
-            # (1) remove underscores everywhere
-            s = s.replace("_", "")
+                # (8) gamma -> HV (case sensitive)
+                s = s.replace("gamma", "HV")
 
-            # (9) normalize electrons -> e^-
-            s = e_re.sub("e^-", s)
+                # (1) remove underscores everywhere
+                s = s.replace("_", "")
 
-            # Token-wise star + charge processing (rules 6 & 7)
-            s = normalize_tokens(s)
+                # (9) normalize electrons -> e^-
+                s = e_re.sub("e^-", s)
 
-            # Protect electron so its caret isn't removed below
-            s = s.replace("e^-", "__ELECTRON__")
+                # Token-wise star + charge processing (rules 6 & 7)
+                s = normalize_tokens(s)
 
-            # (5) remove remaining carets used for excited-state notation, keep parentheses
-            # This turns O(^1^D) -> O(1D), O2(a^1Deltag^) -> O2(a1Deltag)
-            s = caret_noncharge_re.sub("", s)
+                # Protect electron so its caret isn't removed below
+                s = s.replace("e^-", "__ELECTRON__")
 
-            # Restore electron
-            s = s.replace("__ELECTRON__", "e^-")
+                # (5) remove remaining carets used for excited-state notation, keep parentheses
+                # This turns O(^1^D) -> O(1D), O2(a^1Deltag^) -> O2(a1Deltag)
+                s = caret_noncharge_re.sub("", s)
 
-            # Final cleanup spacing around separators
-            s = s.replace("a1Deltag", "1Delta")
-            s = re.sub(r"\s*=\s*", " = ", s)
-            s = re.sub(r"\s+", " ", s).strip()
+                # Restore electron
+                s = s.replace("__ELECTRON__", "e^-")
 
-            fout.write(s + "\n")
+                # Final cleanup spacing around separators
+                s = s.replace("a1Deltag", "1Delta")
+                s = re.sub(r"\s*=\s*", " = ", s)
+                s = re.sub(r"\s+", " ", s).strip()
+
+                fout.write(s + "\n")
+
+                # Optional: append ignored tail after col 50
+                if fout_rc is not None:
+                    tail = ""
+                    if len(original_full) > 50:
+                        tail = original_full[50:]  # EXACTLY what was ignored
+                    tail = tail.rstrip()
+
+                    if tail:
+                        fout_rc.write(s.ljust(50)[:50] + "\t" + tail + "\n")
+                    else:
+                        fout_rc.write(s.ljust(50)[:50] + "\n")
+        finally:
+            if fout_rc is not None:
+                fout_rc.close()
+
     print(f"Done reprocessing {input_path}\n")
+    if rate_const == "Y":
+        print(f"Also wrote rate-constant version: {out_path_rc}\n")
     return str(out_path)
+
 
 ########## Antonio 2007 chemistry.dat processing       #########
 
@@ -1428,7 +1627,7 @@ def reprocess_stand_file(input_path):
 
 def build_unique_reactions(reprocess_paths, long_table="N"):
     """
-    Build unique-reaction tables across 6 *reprocessed* network files.
+    Build unique-reaction tables across 6(or n [can be expanded]) *reprocessed* network files.
 
     Inputs
     ------
@@ -1486,6 +1685,7 @@ def build_unique_reactions(reprocess_paths, long_table="N"):
         base = os.path.basename(p)
         m = re.search(r"^reprocess_(.+?)_output_", base)
         if not m:
+            print("Something wrong with the file names.\n Check if the network name is present in filename")
             # fallback: try without reprocess_ prefix
             m = re.search(r"^(.+?)_output_", base)
         return m.group(1) if m else os.path.splitext(base)[0]
@@ -1569,10 +1769,11 @@ def build_unique_reactions(reprocess_paths, long_table="N"):
     # ingest
     # -------------------------
     net_order = [network_name_from_path(p) for p in reprocess_paths]
+    print(net_order)
 
     # stable order (to keep outputs deterministic):
     # If the "usual" names exist, use that order, otherwise use discovered order.
-    preferred = ["Hu", "Agundez", "Velliet", "Moses", "VULCAN", "Stand"]
+    preferred = ["Hu", "Agundez", "VULCAN", "velliet", "MOSES", "stand"]
 
     def rank(n):
         return preferred.index(n) if n in preferred else 10_000 + net_order.index(n)
@@ -1696,4 +1897,277 @@ def build_unique_reactions(reprocess_paths, long_table="N"):
     }
 
 
+
+#================================= UNIQUE REACTION PRODUCTION - VII =========================================
+# SAME AS ABOVE JUST HANDLES THE RATE CONSTANT AS WELL
+# Gives the whole line as output after unique reaction.
+
+def build_unique_rxns_ratek(reprocess_rateconst_paths, long_table="N"):
+    """
+    Like build_unique_reactions(), but for reprocess_rate_constant*.dat files where:
+      - reaction text is in the first 50 chars (fixed-width)
+      - tail text is line[50:] (original ignored chunk)
+
+    Outputs:
+    1) uniq_reactions_rateconst_<TAG>.dat
+       One unique reaction per row (uses first-seen reaction text, stripped).
+    2) uniq_reactions_rateconst_metadata_<TAG>.dat
+       First line: Reaction (50 chars) + 7 columns of line numbers (0001 format) per network.
+       Then, UNDER EACH reaction row, prints the tails in this exact order:
+         Hu, Agundez, VULCAN, velliet, MOSES, stand, agm2007
+       Format:
+         NET \\t :: \\t TAIL
+       If missing or tail empty: NET \\t :: \\t !!!!!
+    3) (optional) uniq_reactions_rateconst_longtable_<TAG>.dat
+       Same idea as your long table: one column per network showing reaction text (first 50 chars).
+    """
+
+    nof = len(reprocess_rateconst_paths)
+    print(reprocess_rateconst_paths)
+    if not isinstance(reprocess_rateconst_paths, (list, tuple)) or len(reprocess_rateconst_paths) < 1:
+        raise ValueError("reprocess_rateconst_paths must be a list/tuple of file paths.")
+
+    long_table = (long_table or "N").strip().upper()
+    if long_table not in {"Y", "N"}:
+        long_table = "N"
+
+    # -------------------------
+    # helpers: name + tag
+    # -------------------------
+    def network_name_from_path(p):
+        base = os.path.basename(p)
+
+        # Try both:
+        # reprocess_rate_constant<NETWORK>_output_...
+        # reprocess_rate_constant<something> (fallbacks)
+        m = re.search(r"^reprocess_rate_const_(.+?)_output_", base)
+        if not m:
+            # If your file is actually named reprocess_rate_constant<original> with no _output_ pattern,
+            # fall back to your old extractor.
+            m = re.search(r"^reprocess_(.+?)_output_", base)
+            if not m:
+                m = re.search(r"^(.+?)_output_", base)
+
+        return m.group(1) if m else os.path.splitext(base)[0]
+
+    def tag_from_any_path(p):
+        base = os.path.basename(p)
+        m = re.search(r"output_(.+?)\.dat$", base)
+        return m.group(1) if m else "UNKNOWN"
+
+    tag = None
+    for p in reprocess_rateconst_paths:
+        t = tag_from_any_path(p)
+        if t != "UNKNOWN":
+            tag = t
+            break
+    if tag is None:
+        tag = "UNKNOWN"
+
+    # -------------------------
+    # parsing / canonicalization (MATCHING USES ONLY FIRST 50 CHARS)
+    # -------------------------
+    SEP_RXN = " = "
+    SEP_SPECIES = " + "
+
+    def strip_paren_chars(species):
+        return species.replace("(", "").replace(")", "")
+
+    def normalize_species_for_matching(sp):
+        sp2 = strip_paren_chars(sp)
+
+        # OH/HO charge normalization (your existing behavior)
+        m = re.fullmatch(r"([A-Z]{2})(?:\^)?([+-]+)", sp2)
+        if m:
+            base, charge = m.group(1), m.group(2)
+            if base in {"OH", "HO"}:
+                if "+" in charge and "-" in charge:
+                    return sp2
+                return "".join(sorted(base)) + "^" + charge
+
+        if re.fullmatch(r"[A-Z]+", sp2):
+            sp2 = "".join(sorted(sp2))
+
+        return sp2
+
+    def canonicalize_side(side_text):
+        parts = [p.strip() for p in side_text.split(SEP_SPECIES)]
+        out = []
+        for sp in parts:
+            if not sp:
+                continue
+            if sp == "HV":
+                continue
+            out.append(normalize_species_for_matching(sp))
+        return tuple(sorted(out))
+
+    def canonical_key(reaction_line):
+        if SEP_RXN not in reaction_line:
+            return None
+        lhs, rhs = reaction_line.split(SEP_RXN, 1)
+        lhs_t = canonicalize_side(lhs.strip())
+        rhs_t = canonicalize_side(rhs.strip())
+        if not lhs_t and not rhs_t:
+            return None
+        return (lhs_t, rhs_t)
+
+    # -------------------------
+    # ingest
+    # -------------------------
+    discovered = [network_name_from_path(p) for p in reprocess_rateconst_paths]
+
+    # Your requested order for tail blocks
+    preferred = ["Hu", "Agundez", "VULCAN", "velliet", "MOSES", "stand", "agm2007"]
+
+    def rank(n):
+        return preferred.index(n) if n in preferred else 10_000 + discovered.index(n)
+
+    net_order = sorted(discovered, key=rank)
+
+    # map network name -> path
+    net_path = {network_name_from_path(p): p for p in reprocess_rateconst_paths}
+
+    # db:
+    # key -> {
+    #   "repr": reaction_text (first seen),
+    #   "line": {net: ln or 0},
+    #   "text": {net: reaction_text or ""},
+    #   "tail": {net: tail_text or ""},  # from [50:]
+    # }
+    db = OrderedDict()
+
+    RXN_W = 50
+
+    for net in net_order:
+        path = net_path[net]
+        with open(path, "r") as f:
+            for ln, raw in enumerate(f, 1):
+                full = raw.rstrip("\n")
+
+                # reaction is fixed-width in first 50 chars
+                reaction_part = full[:RXN_W]
+                reaction = reaction_part.strip()
+
+                if not reaction:
+                    continue
+                if SEP_RXN not in reaction:
+                    continue
+
+                key = canonical_key(reaction)
+                if key is None:
+                    continue
+
+                # tail is everything after col 50
+                if "\t" in full:
+                    tail = full.split("\t", 1)[1].rstrip()
+                else:
+                    tail = (full[RXN_W:] if len(full) > RXN_W else "").rstrip()
+                if key not in db:
+                    db[key] = {
+                        "repr": reaction,
+                        "line": {n: 0 for n in net_order},
+                        "text": {n: "" for n in net_order},
+                        "tail": {n: "" for n in net_order},
+                    }
+
+                if db[key]["line"][net] == 0:
+                    db[key]["line"][net] = ln
+                    db[key]["text"][net] = reaction
+                    db[key]["tail"][net] = tail
+
+    # -------------------------
+    # write outputs
+    # -------------------------
+    out1 = f"uniq_reactions_rateconst_{tag}.dat"
+    out2 = f"uniq_reactions_rateconst_metadata_{tag}.dat"
+    out3 = f"uniq_reactions_rateconst_longtable_{tag}.dat"
+
+    # file 1: unique reaction list
+    with open(out1, "w") as f1:
+        for entry in db.values():
+            f1.write(entry["repr"] + "\n")
+
+    # file 2: metadata + tail blocks
+    COL_W = 10
+
+    def fmt_rxn(s):
+        s = (s or "").strip()
+        return (s[:RXN_W]).ljust(RXN_W)
+
+    def fmt_ln(n):
+        try:
+            n = int(n)
+        except Exception:
+            n = 0
+        if n < 0:
+            n = 0
+        if n > 9999:
+            n = 9999
+        return f"{n:04d}".ljust(COL_W)
+
+    header = [("Reaction".ljust(RXN_W))] + [net.ljust(COL_W) for net in net_order]
+
+    tail_print_order = ["Hu", "Agundez", "VULCAN", "velliet", "MOSES", "stand", "agm2007"]
+
+    with open(out2, "w") as f2:
+        f2.write("\t".join(header) + "\n")
+        for entry in db.values():
+            row = [fmt_rxn(entry["repr"])]
+            row.extend(fmt_ln(entry["line"][net]) for net in net_order)
+            f2.write("\t".join(row) + "\n")
+            #print("entry line keys:", list(entry["line"].keys()))
+            #print("tail_print_order:", tail_print_order)
+            #break
+            # Under each reaction, write tails in your requested order
+            
+            for net in tail_print_order:
+                if net not in entry["line"]:
+                    f2.write(f"{net}\t::\t!!something wrong with code!!\n")
+                    continue
+
+                if entry["line"][net] == 0:
+                    f2.write(f"{net}\t::\t!!no reaction present!!\n")
+                    continue
+
+                tail = entry["tail"][net]
+                if not tail.strip():
+                    f2.write(f"{net}\t::\t!!no metadata present in org file!!\n")
+                else:
+                    f2.write(f"{net}\t::\t{tail}\n")
+
+            f2.write("##########\n")  # spacer between reactions
+
+    # file 3: optional long table (reaction text only, fixed 50 cols)
+    if long_table == "Y":
+        COL_W_LONG = 50
+
+        def fmt_long(s):
+            s = (s or "").strip()
+            return s[:COL_W_LONG].ljust(COL_W_LONG)
+
+        counts = {net: 0 for net in net_order}
+
+        with open(out3, "w") as f3:
+            f3.write("".join(fmt_long(net) for net in net_order) + "\n")
+
+            for entry in db.values():
+                row_parts = []
+                for net in net_order:
+                    txt = entry["text"][net]
+                    if txt:
+                        counts[net] += 1
+                    row_parts.append(fmt_long(txt))
+                f3.write("".join(row_parts) + "\n")
+
+            f3.write("".join(fmt_long(str(counts[net])) for net in net_order) + "\n")
+
+    print("done finding unique reactions + tails....")
+    return {
+        "tag": tag,
+        "networks": net_order,
+        "out_unique": out1,
+        "out_metadata_with_tails": out2,
+        "out_longtable": out3 if long_table == "Y" else None,
+        "n_unique": len(db),
+    }
 

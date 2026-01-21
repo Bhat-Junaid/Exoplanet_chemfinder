@@ -1,9 +1,33 @@
+
 from pathlib import Path
 import re
 
 from collections import Counter
 
 PLUS_SPLIT = re.compile(r" \+ ")
+
+"""
+For the verification of number of species;
+verification of unique_species_list.dat
+It takes the uniq_reactions_agm.dat and splits each 
+species of the equation into a single line and then 
+finds the repeated lines or unique lines. Thus giving 
+unique species.
+
+*********
+CAUTION:
+********
+This is a preliminary code. It includes HV as species 
+which is not the case as it is just a proxy for light
+This code should only be used as a sanity check to 
+unique_species_list.dat not the primary source to generate 
+such kind of species list.
+
+"""
+
+
+# Two capital letters, optional charge with optional caret: AB, BA, AB+, AB^+, AB-, AB^-
+_TWO_LETTER_CHARGED_RE = re.compile(r"^([A-Z])([A-Z])(?:\^?([+-]))?$")
 
 def reactions_to_tokens(
     input_path: str | Path,
@@ -15,9 +39,10 @@ def reactions_to_tokens(
     Rules:
     - One reaction per line
     - Reactants + products are split by '=' or '=>'
-    - Species are split by '+'
-    - Only '(' and ')' characters are removed
-      (O(1D) -> O1D)
+    - Species are split by ' + ' (exactly one space, plus, one space)
+    - Only '(' and ')' characters are removed (O(1D) -> O1D)
+    - FINAL step: if token is exactly two capital letters (optionally with +/- charge),
+      reorder letters alphabetically so AB == BA, AB^+ == BA^+, AB- == BA-, etc.
     """
 
     input_path = Path(input_path)
@@ -29,9 +54,38 @@ def reactions_to_tokens(
     def strip_paren_chars(token: str) -> str:
         return token.replace("(", "").replace(")", "")
 
+    def normalize_two_letter_order(token: str) -> str:
+        """
+        Apply ONLY to tokens like AB, BA, AB^+, BA+, AB^-, etc.
+        Keep the charge sign as-is, keep whether caret exists as-is.
+        """
+        m = _TWO_LETTER_CHARGED_RE.fullmatch(token)
+        if not m:
+            return token
+
+        a, b, charge = m.group(1), m.group(2), m.group(3)
+
+        # canonical order: alphabetical
+        base = "".join(sorted([a, b]))
+
+        if charge is None:
+            return base
+
+        # preserve caret presence if it was written with caret in the original token
+        has_caret = "^" in token
+        return f"{base}{'^' if has_caret else ''}{charge}"
+
     def tokenize_side(side: str) -> list[str]:
-        parts = [p.strip() for p in PLUS_SPLIT.split(side) if p.strip()]
-        return [strip_paren_chars(p) for p in parts]
+        side = side.strip()
+        if not side:
+            return []
+
+        parts = [p.strip() for p in side.split(" + ") if p.strip()]
+        out = []
+        for p in parts:
+            p = strip_paren_chars(p)
+            out.append(p)
+        return out
 
     tokens: list[str] = []
 
@@ -41,7 +95,6 @@ def reactions_to_tokens(
             if not line:
                 continue
 
-            # choose reaction separator
             if "=>" in line:
                 lhs, rhs = line.split("=>", 1)
             elif "=" in line:
@@ -51,6 +104,9 @@ def reactions_to_tokens(
 
             tokens.extend(tokenize_side(lhs))
             tokens.extend(tokenize_side(rhs))
+
+    # FINAL pass: apply AB==BA rule after tokens exist as lines
+    tokens = [normalize_two_letter_order(tok) for tok in tokens]
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as f:
