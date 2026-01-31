@@ -3,8 +3,10 @@ from pathlib import Path
 import re
 from typing import Optional, Tuple
 
+# ----------------------------------- WRITING UNIQUE SPECIES -----------------------------------
 # Identifies the number of unique species in the final generated output file 
 # filename: uniq_reactions_A_B_C.dat
+
 def write_unique_species_list(path: str | Path, out_name: str = "unique_species_list.dat") -> tuple[int, Path]:
     """
     Extract unique species tokens from a reaction file and write them one per line.
@@ -119,10 +121,7 @@ def write_unique_species_list(path: str | Path, out_name: str = "unique_species_
     return len(uniq), out_path
 
 
-##########################
-#########################
-#########################
-
+# -------------------------------- SORTING VI (AS PER REACTANT NO.S)----------------------------
 
 PLUS_SPLIT = re.compile(r"\s+\+\s+")
 
@@ -279,9 +278,9 @@ def sort_rxns_reactant(
 
     return output_path
 
-###########################
-##########################
-###########################
+
+# ------------------------------ REMOVE AGM REACTIONS ----------------------------------------
+# REMOVES ALL THE REACTIONS ALREADY PRESENT IN AGM CHEMISTRY.DAT 007
 
 
 def rm_nonzero_agm(
@@ -451,70 +450,199 @@ def rm_nonzero_agm(
     return filtered_path, cleaned_path
 
 
-""""
-def rm_nonzero_agm1(input_path: str | Path, clean_metadata: str = "Y") -> Tuple[Path, Optional[Path]]:
+# ---------------------------------- SORTING VII (AS PER THE AGM STYLE) -------------------------
+# WORKS ONLY WHEN THE FILES HAVE GONE THROUGH THE rm_nonzero_agm FILTERING
+# TAKES IN netrxn_....dat files
 
-    1) Write a filtered file that removes rows where agm2007 != '0000'.
-       Output: netrxn_addition_<inputfilename>
 
-    2) If clean_metadata == 'Y' (default), also write a "clean" file built from
-       the ORIGINAL INPUT, but ONLY for the rows that pass the agm2007 filter.
-       - skips the first line of the input
-       - writes exactly 50 characters per kept line (truncate/pad)
-       Output name: netrxn_addition_<inputfilename with leading 'metadata_' removed>
-                   e.g. metadata_H_HE_O.dat -> netrxn_addition_H_HE_O.dat
+def sort_reactions_order(
+    path: str | Path,
+    kmode: str = "N",
+    kpath: str | Path | None = None,
+    kstack: int = 9,
+) -> Path:
+    """
+    Sort an AGM-style reaction dataset into curated order, preserving metadata/tails.
 
-    input_path = Path(input_path)
-    yn = "Y" if str(clean_metadata).strip().upper().startswith("Y") else "N"
+    Two modes:
 
-    filtered_path = input_path.with_name(f"netrxn_addition_{input_path.name}")
+    A) kmode == 'N' (default): one reaction per line
+       - Reaction is the first 50 characters of each line
+       - Tail is everything after character 50 and is preserved and written back
+       - Output filename:
+           agmfinal_<inputfilename>
+           OR agmfinal_<metadata_inputfilename> (keeps name exactly)
+         (i.e., output is always agmfinal_<in_path.name>)
 
-    cleaned_path: Optional[Path] = None
-    cleaned_fh = None
+    B) kmode == 'Y': stacked blocks (one reaction per kstack lines), separated by lines starting with '##########'
+       - Input taken from `kpath`
+       - Each reaction block has:
+           * reaction header line (first line of block; reaction is chars 0:50)
+           * the next (kstack-1) metadata lines
+           * typically followed by a separator line '##########' (kept with the block)
+       - Sorting is computed from the reaction text in the header line (first 50 chars)
+       - When writing, the entire original block (header+metadata+separator if present) is written back as-is.
 
-    if yn == "Y":
-        cleaned_name = input_path.name
-        if cleaned_name.startswith("metadata_"):
-            cleaned_name = cleaned_name[len("metadata_"):]
-        else:
-            cleaned_name = cleaned_name.replace("metadata_", "", 1)
+    Sorting order (same logic as before, multiplicity counts):
+    1) Unimolecular: exactly 1 reactant token on LHS (HV not present)
+    2) Photolysis: 1 reactant token + HV on LHS (exactly two tokens total, one is HV)
+    3) Bimolecular: exactly 2 reactant tokens on LHS (counting multiplicity),
+       excluding M and T as reactants, and excluding HV (already handled)
+    4) Termolecular: exactly 3 reactant tokens on LHS (counting multiplicity) and includes M or T
+    5) Any reaction containing M as reactant token (not already captured)
+    6) Any reaction containing T as reactant token (not already captured)
+    7) Anything else
 
-        cleaned_path = input_path.with_name(f"netrxn_addition_{cleaned_name}")
-        cleaned_fh = cleaned_path.open("w", encoding="utf-8", newline="\n")
+    Reactant splitting rule:
+    - Reactants are separated ONLY by ' + ' (space-plus-space)
+    - Reaction separator is '=' (must exist in the 50-char reaction field)
+    """
+    km =  kmode
 
-    try:
-        with input_path.open("r", encoding="utf-8", errors="replace") as f, \
-             filtered_path.open("w", encoding="utf-8", newline="\n") as g:
+    def split_reactants_from_rxn_field(rxn_field: str) -> List[str]:
+        rxn = rxn_field.rstrip("\n").strip()
+        if "=" not in rxn:
+            return []
+        lhs = rxn.split("=", 1)[0].strip()
+        if not lhs:
+            return []
+        parts = lhs.split(" + ")
+        return [p.strip() for p in parts if p.strip()]
 
-            for i, line in enumerate(f):
-                stripped = line.strip()
+    def category_key(reactants: List[str]) -> int:
+        if not reactants:
+            return 6
 
-                # always keep empty lines (in filtered); for cleaned, write 50 cols if kept
-                if not stripped:
-                    g.write(line)
+        has_hv = "HV" in reactants
+        has_m = "M" in reactants
+        has_t = "T" in reactants
+
+        # Count reactant TOKENS excluding HV (multiplicity counts)
+        real = [r for r in reactants if r != "HV"]
+        nreal = len(real)
+
+        if nreal == 1 and not has_hv:
+            return 0
+
+        if has_hv and nreal == 1 and len(reactants) == 2:
+            return 1
+
+        if nreal == 2 and ("M" not in real) and ("T" not in real):
+            return 2
+
+        if nreal == 3 and (has_m or has_t):
+            return 3
+
+        if has_m:
+            return 4
+
+        if has_t:
+            return 5
+
+        return 6
+
+    # ----------------------------
+    # Mode A: one reaction per line
+    # ----------------------------
+    if km == "N":
+        in_path = Path(path)
+        if in_path.suffix.lower() != ".dat":
+            raise ValueError("Expected a .dat input file")
+
+        out_path = in_path.with_name(f"agmfinal_{in_path.name}")
+
+        rows: List[Tuple[int, int, str, str, str]] = []
+        # (cat, original_index, rxn_field, tail, full_line)
+
+        with in_path.open("r", encoding="utf-8", errors="replace") as f:
+            for idx, line in enumerate(f):
+                rxn_field = line[:50]
+                tail = line[50:]
+                reactants = split_reactants_from_rxn_field(rxn_field)
+                cat = category_key(reactants)
+                rows.append((cat, idx, rxn_field, tail, line))
+
+        rows.sort(key=lambda x: (x[0], x[1]))
+
+        with out_path.open("w", encoding="utf-8", newline="\n") as g:
+            for cat, idx, rxn_field, tail, full_line in rows:
+                if "=" not in rxn_field:
+                    g.write(full_line if full_line.endswith("\n") else full_line + "\n")
                     continue
 
-                cols = stripped.split()
+                rf = rxn_field
+                if len(rf) < 50:
+                    rf = rf.ljust(50)
+                else:
+                    rf = rf[:50]
 
-                # header or malformed line → keep in filtered, but cleaned skips first line anyway
-                if cols[-1].isalpha() or len(cols[-1]) != 4:
-                    g.write(line)
-                    continue
+                out_line = rf + tail
+                g.write(out_line)
+                if not out_line.endswith("\n"):
+                   g.write("\n")
 
-                # keep only agm2007 == 0000
-                if cols[-1] == "0000":
-                    g.write(line)
+        return out_path
 
-                    # cleaned file: from ORIGINAL INPUT, skip first line of the file
-                    if cleaned_fh is not None and i != 0:
-                        s = line.rstrip("\n")
-                        cleaned_fh.write(s[:49].ljust(49) + "\n")
+    # ----------------------------
+    # Mode B: stacked blocks + separator lines
+    # ----------------------------
+    if kpath is None:
+        raise ValueError("kmode='Y' requires kpath to be provided")
 
-    finally:
-        if cleaned_fh is not None:
-            cleaned_fh.close()
+    in_path = Path(kpath)
+    if in_path.suffix.lower() != ".dat":
+        raise ValueError("kpath must be a .dat file")
 
-    return filtered_path, cleaned_path
+    out_path = in_path.with_name(f"agmfinal_{in_path.name}")
 
+    # Read all lines
+    with in_path.open("r", encoding="utf-8", errors="replace") as f:
+        lines = f.readlines()
 
-"""
+    sep_prefix = "##########"
+
+    # Build blocks: [kstack lines] + optional separator line right after
+    blocks: List[Tuple[int, int, List[str], str]] = []
+    # (cat, original_index, block_lines, rxn_field)
+
+    idx = 0
+    bidx = 0
+    n = len(lines)
+
+    while idx < n:
+        # skip stray separator lines
+        if lines[idx].lstrip().startswith(sep_prefix):
+            idx += 1
+            continue
+
+        # need at least kstack lines for a block
+        if idx + kstack > n:
+            break
+
+        block = lines[idx : idx + kstack]
+        rxn_field = block[0][:50]
+        reactants = split_reactants_from_rxn_field(rxn_field)
+        cat = category_key(reactants)
+
+        idx += kstack
+
+        # include following separator line if present
+        if idx < n and lines[idx].lstrip().startswith(sep_prefix):
+            block.append(lines[idx])
+            idx += 1
+
+        blocks.append((cat, bidx, block, rxn_field))
+        bidx += 1
+
+    # Stable sort by (category, original_block_index)
+    blocks.sort(key=lambda x: (x[0], x[1]))
+
+    with out_path.open("w", encoding="utf-8", newline="\n") as g:
+        for cat, orig, block, rxn_field in blocks:
+            g.writelines(block)
+            # ensure trailing newline safety (in case last line missing)
+            if block and not block[-1].endswith("\n"):
+                g.write("\n")
+
+    return out_path
+

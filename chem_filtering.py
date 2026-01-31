@@ -58,6 +58,13 @@ elements= {"O", "H", "He"}
 
 elements_v= { "Cl", "e"}
 
+"""
+# For Moses data acquired via Shami paper on SO2
+pb.moses_vII(
+    path="/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/MOSES_2011_data",
+    allowed_elements=elements, metadata = 'N'
+)
+"""
 
 pb.vulcan(
     path="/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/Input_VULCAN_fullnet.txt",
@@ -71,10 +78,11 @@ pb.hu(
     allowed_elements=elements, metadata = 'N'
 )
 
-pb.moses(
+pb.moses_vII(
     path="/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/MOSES_2011_data",
     allowed_elements=elements, metadata = 'N'
 )
+
 
 pb.stand(
     path="/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/Input_STAND2020.dat",
@@ -89,3 +97,4 @@ pb.velliet_venot(
 pb.agundez(
     path = "/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/Input_Agundez2025.dat",
     allowed_elements = elements, metadata = 'N')
+

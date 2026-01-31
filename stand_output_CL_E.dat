@@ -1,5 +1,0 @@
-#      REACTION                                      ALPHA         BETA    GAMMA  REF     (added by JRB)
-Cl + Cl + M => Cl_2 + M                            1.40E-32 cm6/s   0.0       0.0 789                 
-Cl + Cl + M => Cl_2 + M                            3.38E-13 cm3/s  -1.0       0.0 Est.                      
-Cl+ + e- => Cl + h{nu}                             1.13E-10 cm3/s  -0.7       0.0 698 a   
-Cl_2 + gamma => Cl + Cl                                                           852           

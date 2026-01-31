@@ -114,7 +114,7 @@ def reactions_to_tokens(
             f.write(tok + "\n")
 
 reactions_to_tokens(
-    "/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/Uniq_reactions_agm_H_HE_O.dat",
+    "/Users/jb285991/Desktop/PHD/CODE/CHEMNETGEN/uniq_reactions_rateconst_H_HE_O.dat",
     "tokens_out.dat"
 )
 

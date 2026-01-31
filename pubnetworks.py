@@ -2,7 +2,7 @@ import re
 import os
 from collections import Counter, OrderedDict
 from pathlib import Path
-
+from inputchem_backend import write_unique_species_list, sort_rxns_reactant
 
 # ============================ VULCAN NETWORK ==============================================
 
@@ -234,6 +234,7 @@ def hu(path, allowed_elements, metadata="N"):
 
 #=================================== MOSES NETWORK ==========================================
 
+# legacy
 def moses(path, allowed_elements, metadata="N", info = "N"):
     """
     Master function for Moses chemical network.
@@ -363,6 +364,156 @@ def moses(path, allowed_elements, metadata="N", info = "N"):
 
             # Extract reaction number
             if re.match(r'^\s*\d+\)', raw):
+                species = extract_species(raw)
+                if species and all(species_allowed(s, allowed_elements) for s in species):
+                    kept.append(raw)
+            else:
+                species = extract_species(raw)
+                if species and all(species_allowed(s, allowed_elements) for s in species):
+                    kept[-1] += "\n" + raw
+
+    # ---------------- Write Output ----------------
+    if not kept:
+        print("No reactions matched the allowed elements.")
+        return
+
+    with open(output_file, "w") as out:
+        for block in kept:
+            out.write(block + "\n")
+
+    print(f"Filtered reactions written to {output_file}\n")
+
+# https://doi.org/10.1038/s41586-023-05902-2 , data presented here
+def moses_vII(path, allowed_elements, metadata="N", info = "N"):
+    """
+    Master function for Moses chemical network.
+    path: folder containing ReadMe and input_MosesII .txt files
+    allowed_elements: list of allowed elements, e.g., ['O', 'H', 'C']
+    metadata: 'Y' to include ReadMe, else 'N'
+    """
+
+    print("FILTERING MOSES CHEMICAL NETWORK....")
+
+    # ---------------- Helper Functions ----------------
+    def parse_formula(formula):
+        """Return atomic composition as uppercase keys"""
+        tokens = re.findall(r'([A-Z][a-z]?)(\d*)', formula)
+        comp = Counter()
+        for el, n in tokens:
+            comp[el.upper()] += int(n) if n else 1
+        return comp
+
+    def species_allowed(species, allowed_elements):
+        """
+        Check species composition against allowed_elements
+        Excited states stripped
+        'M' always allowed
+        """
+        species = strip_excited_state(species)
+
+        if species.upper() == "M":
+            return True
+
+        species_atoms = parse_formula(species)
+        allowed_upper = {el.upper() for el in allowed_elements}
+        return set(species_atoms.keys()).issubset(allowed_upper)
+
+    def strip_excited_state(species):
+        """
+        Collapse excited states:
+        O(1D) -> O
+        (1)CH2, (3)CH2 -> CH2
+        """
+        # Remove parenthesis with digits for CH2
+        species = re.sub(r'\(\d+\)', '', species)
+        # Remove O(1D) style
+        species = re.sub(r'O\(\d+D\)', '', species)
+        
+        return species.strip()
+
+    def extract_species(line):
+        if '=' not in line:
+            return []
+
+        # remove reaction number
+        #line = re.sub(r'^\s*\d+\)\s*', '', line)
+
+        # cut off kinetics (everything starting with k, k0, koo)
+        line = line[:60].rstrip()
+
+        if '=' not in line:
+            return[]
+
+        lhs, rhs = line.split('=', 1)
+
+        parts = lhs.split('+') + rhs.split('+')
+        return [p.strip() for p in parts if p.strip()]
+
+
+    # ---------------- File Setup ----------------
+    tag = "_".join(sorted(el for el in allowed_elements))
+    parent_folder = os.path.dirname(path)
+    output_file = os.path.join(parent_folder, 
+                               f"MOSESII_output_{tag}.dat")
+    kept = []
+
+    # ---------------- Metadata ----------------
+    readme_file = os.path.join(path, "ReadMe")
+    if metadata.upper() == "Y" and os.path.exists(readme_file):
+        with open(readme_file, "r") as f:
+            for line in f:
+                kept.append(f"# {line.rstrip()}")
+        kept.append("\n\n\n\n")
+
+    # Add fixed comments
+    if info == 'Y':
+        kept.append("## IMPORTANT INFORMATION (added by Junaid)")
+        kept.append("# For rate coefficients please check TableS1.pdf")
+        kept.append("# R1-137 are photolysis reactions")
+
+    # ---------------- Read TableS2 Text File ----------------
+    txt_files = [f for f in os.listdir(path) if f.endswith(".txt")]
+    if not txt_files:
+        print("No .txt files found in folder.")
+        return
+
+    # Use the specified file
+    txt_file = os.path.join(path, "input_MosesII.txt")
+    #print(txt_file)
+    if not os.path.exists(txt_file):
+        txt_file = os.path.join(path, txt_files[0])  # fallback
+        print(f"Specified file not found, using {txt_file}")
+
+    # ---------------- Process File ----------------
+    stop_line_pattern = " STOP_EOF"
+    reactions_started = False
+
+    with open(txt_file, "r") as f:
+        for lineno, line in enumerate(f, 1):
+            raw = line.rstrip("\n")
+            
+            # First 70 characters as header
+            if info == 'Y':
+                if lineno == 1:
+                    kept.append("\n\n\n")
+                    kept.append(raw[:70])
+                    continue
+
+
+            # Stop condition
+            if stop_line_pattern in raw or lineno > 1450:
+                break
+
+            # Skip until "REACTIONS:" is found
+            if not reactions_started:
+                if info == 'Y':
+                    kept.append(raw)
+                if "STOP SPECIES" in raw:
+                    reactions_started = True
+                continue
+
+            # Extract reaction line
+            if re.match(r'^\s*[A-Z0-9]', raw):
                 species = extract_species(raw)
                 if species and all(species_allowed(s, allowed_elements) for s in species):
                     kept.append(raw)
@@ -1348,6 +1499,7 @@ def reprocess_vulcan_file(input_path, rate_const="Y"):
         print(f"Also wrote rate-constant version: {out_path_rc}\n")
     return str(out_path)
 
+# Legacy code for original MOSES 2011
 def reprocess_moses_file(input_path, rate_const="Y"):
     """
     Moses reprocess:
@@ -1447,6 +1599,110 @@ def reprocess_moses_file(input_path, rate_const="Y"):
     if rate_const == "Y":
         print(f"Also wrote rate-constant version: {out_path_rc}\n")
     return str(out_path)
+
+# code for MOSES network as presented in
+# https://doi.org/10.1038/s41586-023-05902-2 , by SHAMI
+def reprocess_mosesvii_file(input_path, rate_const="Y"):
+    """
+    Moses reprocess:
+
+    - Read columns 0–60 (1-based) => Python slice [0:59]
+    - Normalize spacing around '+' and '='
+    - Expand stoichiometric prefixes like 2H, 2OH, 2HO2, 3O, etc.
+      ONLY when the number is a PREFIX and the species starts with a capital letter.
+      Molecules like H2O are untouched.
+    - Output: reprocess_<original_name>.dat
+
+    RATE CONSTANT EXTRA OUTPUT (your request):
+    - If rate_const == "Y":
+        also write a second file that keeps the processed reaction, then appends
+        the original line content AFTER column 60 (the part we previously ignored).
+      Output name:
+        reprocess_rate_const_<original_filename>
+
+    Returns output path as a string.
+    """
+
+    input_path = Path(input_path)
+    if input_path.suffix.lower() != ".dat":
+        raise ValueError("Expected a .dat input file")
+
+    out_path = input_path.with_name("reprocess_" + input_path.name)
+
+    rate_const = str(rate_const).strip().upper()
+    out_path_rc = (
+        input_path.with_name("reprocess_rate_const_" + input_path.name)
+        if rate_const == "Y"
+        else None
+    )
+
+    stoich_re = re.compile(r"^(\d+)([A-Z][A-Za-z0-9()]*)$")
+
+    def expand_side(side: str) -> str:
+        terms = [t.strip() for t in side.split("+")]
+        expanded = []
+
+        for term in terms:
+            if not term:
+                continue
+
+            m = stoich_re.match(term)
+            if m:
+                n = int(m.group(1))
+                sp = m.group(2)
+                expanded.extend([sp] * n)
+            else:
+                expanded.append(term)
+
+        return " + ".join(expanded)
+
+    with open(input_path, "r") as fin, open(out_path, "w") as fout:
+        fout_rc = open(out_path_rc, "w") if rate_const == "Y" else None
+        try:
+            for line in fin:
+                original_full = line.rstrip("\n")
+
+                chunk = line[0:59].rstrip("\n")
+                chunk = chunk.strip()
+                if not chunk:
+                    continue
+
+                # normalize separators
+                chunk = re.sub(r"\s*\+\s*", " + ", chunk)
+                chunk = re.sub(r"\s*=\s*", " = ", chunk)
+
+                if " = " not in chunk:
+                    continue
+
+                lhs, rhs = chunk.split(" = ", 1)
+
+                lhs = expand_side(lhs)
+                rhs = expand_side(rhs)
+
+                out_line = f"{lhs} = {rhs}"
+                fout.write(out_line + "\n")
+
+                # Optional: append ignored tail after slice end index 60
+                if fout_rc is not None:
+                    tail = ""
+                    if len(original_full) > 59:
+                        tail = original_full[59:]  # EXACTLY what was ignored
+                    tail = tail.rstrip()
+
+                    if tail:
+                        fout_rc.write(out_line.ljust(50)[:50] + "\t" + tail + "\n")
+                    else:
+                        fout_rc.write(out_line.ljust(50)[:50]  + "\n")
+        finally:
+            if fout_rc is not None:
+                fout_rc.close()
+
+    print(f"Done reprocessing {input_path}\n")
+    if rate_const == "Y":
+        print(f"Also wrote rate-constant version: {out_path_rc}\n")
+    return str(out_path)
+
+
 
 def reprocess_stand_file(input_path, rate_const="Y"):
     """
@@ -1773,7 +2029,7 @@ def build_unique_reactions(reprocess_paths, long_table="N"):
 
     # stable order (to keep outputs deterministic):
     # If the "usual" names exist, use that order, otherwise use discovered order.
-    preferred = ["Hu", "Agundez", "VULCAN", "velliet", "MOSES", "stand"]
+    preferred = ["Hu", "Agundez", "VULCAN", "velliet", "MOSESII", "stand"]
 
     def rank(n):
         return preferred.index(n) if n in preferred else 10_000 + net_order.index(n)
@@ -2017,7 +2273,7 @@ def build_unique_rxns_ratek(reprocess_rateconst_paths, long_table="N"):
     discovered = [network_name_from_path(p) for p in reprocess_rateconst_paths]
 
     # Your requested order for tail blocks
-    preferred = ["Hu", "Agundez", "VULCAN", "velliet", "MOSES", "stand", "agm2007"]
+    preferred = ["Hu", "Agundez", "VULCAN", "velliet", "MOSESII", "stand", "agm2007"]
 
     def rank(n):
         return preferred.index(n) if n in preferred else 10_000 + discovered.index(n)
@@ -2107,7 +2363,7 @@ def build_unique_rxns_ratek(reprocess_rateconst_paths, long_table="N"):
 
     header = [("Reaction".ljust(RXN_W))] + [net.ljust(COL_W) for net in net_order]
 
-    tail_print_order = ["Hu", "Agundez", "VULCAN", "velliet", "MOSES", "stand", "agm2007"]
+    tail_print_order = ["Hu", "Agundez", "VULCAN", "velliet", "MOSESII", "stand", "agm2007"]
 
     with open(out2, "w") as f2:
         f2.write("\t".join(header) + "\n")
@@ -2170,4 +2426,8 @@ def build_unique_rxns_ratek(reprocess_rateconst_paths, long_table="N"):
         "out_longtable": out3 if long_table == "Y" else None,
         "n_unique": len(db),
     }
+
+
+
+#================================== UNIQUE SPECIES LIST & REACTANT NO SORTING ===============================
 
